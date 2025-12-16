@@ -1579,8 +1579,15 @@
                                                         border: 'none',
                                                         objectFit: 'cover'
                                                     }}
-                                                    allow="autoplay; fullscreen"
+                                                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                                                     allowFullScreen
+                                                    frameBorder="0"
+                                                    onLoad={() => {
+                                                        console.log('Google Drive video loaded');
+                                                    }}
+                                                    onError={(e) => {
+                                                        console.error('Google Drive video error:', e);
+                                                    }}
                                                 />
                                             ) : (
                                                 <video
@@ -2211,14 +2218,14 @@
                     const fileId = fileIdMatch[1];
                     // iframe으로 재생 가능한 preview 링크로 변환
                     // autoplay와 mute 파라미터 추가
-                    const params = autoplay ? '?autoplay=1&mute=1' : '';
+                    const params = autoplay ? '?autoplay=1&mute=1&loop=1' : '';
                     return `https://drive.google.com/file/d/${fileId}/preview${params}`;
                 }
 
                 // 다른 형식: /open?id=FILE_ID
                 const openMatch = url.match(/\/open\?id=([a-zA-Z0-9_-]+)/);
                 if (openMatch) {
-                    const params = autoplay ? '?autoplay=1&mute=1' : '';
+                    const params = autoplay ? '?autoplay=1&mute=1&loop=1' : '';
                     return `https://drive.google.com/file/d/${openMatch[1]}/preview${params}`;
                 }
 
@@ -2284,15 +2291,39 @@
                                     style={{width: '100%', height: '100%', minHeight: '400px'}}
                                 />
                             ) : isGoogleDrive ? (
-                                <iframe
-                                    key={googleDriveEmbedUrl}
-                                    className="video-player"
-                                    src={googleDriveEmbedUrl}
-                                    frameBorder="0"
-                                    allow="autoplay; fullscreen"
-                                    allowFullScreen
-                                    style={{width: '100%', height: '100%', minHeight: '400px'}}
-                                />
+                                <div style={{position: 'relative', width: '100%', height: '100%', minHeight: '400px'}}>
+                                    <iframe
+                                        key={googleDriveEmbedUrl}
+                                        className="video-player"
+                                        src={googleDriveEmbedUrl}
+                                        frameBorder="0"
+                                        allow="autoplay; fullscreen; encrypted-media; picture-in-picture; accelerometer; gyroscope"
+                                        allowFullScreen
+                                        style={{width: '100%', height: '100%', minHeight: '400px'}}
+                                        onLoad={() => {
+                                            console.log('Google Drive video player loaded');
+                                        }}
+                                        onError={(e) => {
+                                            console.error('Google Drive video player error:', e);
+                                        }}
+                                    />
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '50%',
+                                        left: '50%',
+                                        transform: 'translate(-50%, -50%)',
+                                        color: 'white',
+                                        fontSize: '14px',
+                                        textAlign: 'center',
+                                        display: 'none',
+                                        pointerEvents: 'none'
+                                    }} id="drive-loading-msg">
+                                        구글 드라이브 영상 로딩 중...<br/>
+                                        <small style={{fontSize: '12px', opacity: 0.8}}>
+                                            파일이 공개 설정되어 있는지 확인해주세요
+                                        </small>
+                                    </div>
+                                </div>
                             ) : (
                                 <video
                                     key={convertedVideoUrl}
