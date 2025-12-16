@@ -1,0 +1,2868 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayMon - 웹툰 AI 애니메이션 플랫폼</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: #1a1a1a;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #root {
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .web-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: #1a1a1a;
+        }
+
+        .web-sidebar {
+            flex: 0 0 400px;
+            background: #2a2a2a;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .web-app-container {
+            flex: 1;
+            background: white;
+            max-width: 1000px;
+            margin: 0 auto;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .platform-logo {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .platform-tagline {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        .download-section {
+            margin-bottom: 40px;
+        }
+
+        .download-title {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .download-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .download-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            background: white;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1a1a1a;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .download-btn-icon {
+            font-size: 24px;
+        }
+
+        .qr-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .qr-title {
+            color: white;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 8px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 40px;
+            border-top: 1px solid #3a3a3a;
+        }
+
+        .footer-link {
+            color: #9ca3af;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        .footer-text {
+            color: #6b7280;
+            font-size: 11px;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1024px) {
+            .web-container {
+                flex-direction: column;
+            }
+
+            .web-sidebar {
+                flex: 1;
+                position: relative;
+                height: auto;
+                padding: 20px;
+            }
+
+            .web-app-container {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content-card-horizontal {
+                width: 140px;
+            }
+
+            .content-row-title {
+                font-size: 14px;
+                padding: 0 8px;
+            }
+
+            .content-scroll {
+                padding: 0 8px 8px 8px;
+                gap: 6px;
+            }
+
+            .hero-title {
+                font-size: 20px;
+            }
+
+            .watch-btn {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .day-btn {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+        }
+
+        .page {
+            min-height: 100vh;
+            background: white;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+
+        .status-bar {
+            background: #000;
+            color: white;
+            padding: 4px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #374151;
+        }
+
+        .icon-btn:hover {
+            color: #3b82f6;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-btn {
+            background: #dc2626;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .days-tab {
+            display: flex;
+            overflow-x: auto;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .day-btn {
+            flex-shrink: 0;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #6b7280;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .day-btn.active {
+            color: #3b82f6;
+            border-bottom: 2px solid #3b82f6;
+            position: relative;
+        }
+
+        .day-btn.active::before {
+            content: '●';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 8px;
+            margin-top: -8px;
+        }
+
+        .hero-banner {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .hero-banner video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px 20px;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 28px;
+            font-weight: 900;
+            margin: 8px 0;
+            line-height: 1.3;
+            word-break: keep-all;
+        }
+
+        .watch-btn {
+            background: white;
+            color: #3b82f6;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content-section {
+            padding: 24px 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .content-row {
+            margin-bottom: 32px;
+        }
+
+        .content-row-title {
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            padding: 0 16px;
+            line-height: 1.3;
+            word-break: keep-all;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .content-row-title-icon {
+            flex-shrink: 0;
+        }
+
+        .content-scroll {
+            display: flex;
+            overflow-x: auto;
+            overflow-y: hidden;
+            gap: 12px;
+            padding: 0 16px 16px 16px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
+        .content-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .content-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .content-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .content-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .content-card-horizontal {
+            flex-shrink: 0;
+            width: 200px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .content-card-horizontal:hover {
+            transform: scale(1.05);
+        }
+
+        .content-card-horizontal:active {
+            transform: scale(0.98);
+        }
+
+        .thumbnail-horizontal {
+            aspect-ratio: 2/3;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            background-size: cover;
+            background-position: center;
+            width: 100%;
+        }
+
+        .card-episode-info {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            line-height: 1.3;
+            word-break: keep-all;
+        }
+
+        .episode-status {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .episode-status.free {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .episode-status.watching {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .episode-status.upload {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .episode-status.complete {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .content-card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .content-card:hover {
+            transform: scale(1.02);
+        }
+
+        .thumbnail {
+            aspect-ratio: 2/3;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .rating-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #3b82f6;
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            line-height: 1.4;
+            word-break: keep-all;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .card-episode {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .detail-header {
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .detail-content {
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .detail-banner {
+            aspect-ratio: 16/9;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .banner-title {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .episodes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .episode-item {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .episode-item:hover {
+            background: #f3f4f6;
+        }
+
+        .play-icon {
+            width: 48px;
+            height: 48px;
+            background: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .player-page {
+            min-height: 100vh;
+            background: black;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-header {
+            background: rgba(0,0,0,0.9);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+        }
+
+        .video-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: black;
+            padding: 20px;
+        }
+
+        .video-player {
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 9/16;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .video-player {
+                max-width: 100%;
+                height: 70vh;
+            }
+        }
+
+        .player-footer {
+            background: rgba(0,0,0,0.9);
+            padding: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .next-episode-btn {
+            width: 100%;
+            background: #3b82f6;
+            color: white;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .admin-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .admin-modal {
+            background: white;
+            border-radius: 16px;
+            max-width: 1000px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .admin-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .admin-content {
+            padding: 20px;
+        }
+
+        .admin-item {
+            border: 2px solid #e5e5e5;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .content-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .content-thumbnail {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .edit-btn, .delete-btn, .save-btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .save-btn {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e5e5;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 12px;
+            border: none;
+            background: none;
+        }
+
+        .nav-item.active {
+            color: #3b82f6;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+            .status-bar {
+                display: none;
+            }
+
+            .content-row-title {
+                font-size: 16px;
+                padding: 0 12px;
+                margin-bottom: 8px;
+            }
+
+            .content-scroll {
+                padding: 0 12px 12px 12px;
+                gap: 8px;
+            }
+
+            .content-card-horizontal {
+                width: 160px;
+            }
+
+            .card-title {
+                font-size: 13px;
+                line-height: 1.4;
+                word-break: keep-all;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                -webkit-box-orient: vertical;
+            }
+
+            .card-episode-info {
+                font-size: 10px;
+                line-height: 1.3;
+            }
+
+            .episode-status {
+                font-size: 9px;
+                padding: 2px 5px;
+            }
+
+            .hero-title {
+                font-size: 24px;
+                line-height: 1.3;
+            }
+
+            .watch-btn {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+
+            .header-content {
+                padding: 10px 12px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .icon-btn {
+                font-size: 18px;
+                padding: 2px;
+            }
+
+            .admin-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .day-btn {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+
+            .content-section {
+                padding: 20px 12px;
+            }
+
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function App() {
+            const [currentPage, setCurrentPage] = useState('home');
+            const [selectedContent, setSelectedContent] = useState(null);
+            const [showAdmin, setShowAdmin] = useState(false);
+            const [contentList, setContentList] = useState([]);
+            const [editingId, setEditingId] = useState(null);
+            const [editForm, setEditForm] = useState({});
+            const [isAddingNew, setIsAddingNew] = useState(false);
+            const [selectedDay, setSelectedDay] = useState('홈');
+            const [currentTime, setCurrentTime] = useState('');
+            const [favorites, setFavorites] = useState([]);
+            const [bottomNavTab, setBottomNavTab] = useState('home');
+            const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+            // 파일 경로 생성 함수
+            const getContentFilePath = (contentTitle, type, filename) => {
+                if (!filename) return null;
+                // 폴더명에 맞게 경로 생성 (상대 경로로)
+                const folderName = contentTitle;
+                const path = `./${folderName}/${type === 'thumbnail' ? '썸네일' : '에피소드'}/${filename}`;
+                return path;
+            };
+
+            // 구글 드라이브 이미지 URL 변환 (개선 버전)
+            const getGoogleDriveImageUrl = (url) => {
+                if (!url) return null;
+                
+                // 구글 드라이브 링크인지 확인
+                if (url.includes('drive.google.com')) {
+                    const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                    if (fileIdMatch) {
+                        const fileId = fileIdMatch[1];
+                        
+                        // 방법 1: thumbnail API (가장 안정적, 권장)
+                        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+                    }
+                    
+                    // 다른 형식: /open?id=FILE_ID
+                    const openMatch = url.match(/\/open\?id=([a-zA-Z0-9_-]+)/);
+                    if (openMatch) {
+                        return `https://drive.google.com/thumbnail?id=${openMatch[1]}&sz=w1000`;
+                    }
+                }
+                return url;
+            };
+
+            // 랜덤 이미지 URL 생성 함수 (그라디언트 대신)
+            const generateRandomImageUrl = (seed) => {
+                // Picsum Photos 사용 (랜덤 이미지, 시드 기반으로 일관된 이미지)
+                const imageId = 100 + (seed % 900); // 100-999 범위
+                return `https://picsum.photos/seed/${imageId}/400/600`;
+            };
+
+            // 랜덤 그라디언트 생성 함수
+            const generateRandomGradient = (seed) => {
+                // 시드를 사용하여 일관된 랜덤 생성
+                const colors = [
+                    ['#667eea', '#764ba2'], // 보라색
+                    ['#f093fb', '#f5576c'], // 핑크
+                    ['#4facfe', '#00f2fe'], // 파란색
+                    ['#43e97b', '#38f9d7'], // 초록색
+                    ['#fa709a', '#fee140'], // 핑크-노랑
+                    ['#30cfd0', '#330867'], // 청록색
+                    ['#a8edea', '#fed6e3'], // 연한 청록-핑크
+                    ['#ff9a9e', '#fecfef'], // 핑크
+                    ['#ffecd2', '#fcb69f'], // 오렌지
+                    ['#ff6e7f', '#bfe9ff'], // 빨강-파랑
+                    ['#c471ed', '#f64f59'], // 보라-빨강
+                    ['#12c2e9', '#c471ed', '#f64f59'], // 파랑-보라-빨강
+                    ['#fbc2eb', '#a6c1ee'], // 핑크-파랑
+                    ['#fad961', '#f76b1c'], // 노랑-오렌지
+                    ['#30e8bf', '#ff8235'], // 청록-오렌지
+                    ['#fa8bff', '#2bd2ff'], // 보라-파랑
+                    ['#1e3c72', '#2a5298'], // 진한 파랑
+                    ['#ff6a88', '#ff8a80'], // 빨강
+                    ['#c2e9fb', '#a1c4fd'], // 연한 파랑
+                    ['#ffecd2', '#fcb69f', '#ff8a80'], // 오렌지 그라디언트
+                ];
+                
+                // 시드 기반으로 색상 선택
+                const index = seed % colors.length;
+                const selectedColors = colors[index];
+                
+                if (selectedColors.length === 2) {
+                    return `linear-gradient(135deg, ${selectedColors[0]} 0%, ${selectedColors[1]} 100%)`;
+                } else {
+                    return `linear-gradient(135deg, ${selectedColors[0]} 0%, ${selectedColors[1]} 50%, ${selectedColors[2]} 100%)`;
+                }
+            };
+
+            // 썸네일 이미지 로드 (없으면 기본 이미지)
+            const getThumbnailUrl = (content) => {
+                if (content.thumbnailUrl) {
+                    // 구글 드라이브 링크인 경우 이미지 URL로 변환
+                    return getGoogleDriveImageUrl(content.thumbnailUrl);
+                }
+                if (content.folderThumbnail) {
+                    const path = getContentFilePath(content.title, 'thumbnail', content.folderThumbnail);
+                    // 파일 존재 여부는 실제로는 서버에서 확인해야 하지만, 데모에서는 경로만 반환
+                    return path;
+                }
+                return null;
+            };
+
+            // 에피소드 비디오 URL 로드
+            const getEpisodeVideoUrl = (content, episode) => {
+                if (episode.videoUrl) return episode.videoUrl;
+                if (episode.folderVideo) {
+                    const path = getContentFilePath(content.title, 'episode', episode.folderVideo);
+                    return path;
+                }
+                return null;
+            };
+
+            const initialContent = [
+                {
+                    id: 1,
+                    title: '남궁세가의 제천대성',
+                    rating: 9.9,
+                    status: '최신화',
+                    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    thumbnailUrl: 'https://drive.google.com/file/d/1s6tfvlMv0_jYJ2z2vKIQ0FoigWhevT8Y/view?usp=drive_link',
+                    folderThumbnail: null,
+                    day: '월요일',
+                    genre: '무협',
+                    placement: ['추천', '인기'],
+                    bannerVideoUrl: 'https://drive.google.com/file/d/1oaScON2wJCPTiZ4BvGYv2IxUNX0_V6zq/view?usp=drive_link',
+                    episodes: [
+                        { ep: 1, title: '에피소드 1', duration: '1:34', videoUrl: 'https://drive.google.com/file/d/1oaScON2wJCPTiZ4BvGYv2IxUNX0_V6zq/view?usp=drive_link', folderVideo: null },
+                    ]
+                },
+                {
+                    id: 2,
+                    title: '사형집행관',
+                    rating: 9.8,
+                    status: '최신화',
+                    gradient: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                    thumbnailUrl: 'https://drive.google.com/file/d/1Ckv6a7kRHA31zjGfad56XUTrjWARdalK/view?usp=drive_link',
+                    folderThumbnail: null,
+                    day: '화요일',
+                    genre: '액션',
+                    placement: ['인기', '최신'],
+                    bannerVideoUrl: '', // 구글 드라이브 배너 비디오 링크를 여기에 입력하세요 (선택사항)
+                    episodes: [
+                        { ep: 1, title: '에피소드 1', duration: '0:52', videoUrl: '', folderVideo: null }, // 구글 드라이브 영상 링크를 videoUrl에 입력하세요
+                    ]
+                },
+                {
+                    id: 3,
+                    title: '킬러경찰',
+                    rating: 9.7,
+                    status: '최신화',
+                    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                    thumbnailUrl: 'https://drive.google.com/file/d/1KhNFSOYV5MiNFrSqvX9PSBr-hGDqrEtL/view?usp=drive_link',
+                    folderThumbnail: null,
+                    day: '수요일',
+                    genre: '액션',
+                    placement: ['인기', '추천'],
+                    bannerVideoUrl: '', // 구글 드라이브 배너 비디오 링크를 여기에 입력하세요 (선택사항)
+                    episodes: [
+                        { ep: 1, title: '에피소드 1', duration: '0:52', videoUrl: '', folderVideo: null }, // 구글 드라이브 영상 링크를 videoUrl에 입력하세요
+                    ]
+                },
+                {
+                    id: 4,
+                    title: '악당가문을 갱생시키면',
+                    rating: 9.6,
+                    status: '최신화',
+                    gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                    thumbnailUrl: '', // 구글 드라이브 썸네일 링크를 여기에 입력하세요
+                    folderThumbnail: null,
+                    day: '목요일',
+                    genre: '로맨스',
+                    placement: ['인기', '최신'],
+                    bannerVideoUrl: '', // 구글 드라이브 배너 비디오 링크를 여기에 입력하세요 (선택사항)
+                    episodes: [
+                        { ep: 1, title: '에피소드 1', duration: '1:34', videoUrl: '', folderVideo: null }, // 구글 드라이브 영상 링크를 videoUrl에 입력하세요
+                    ]
+                },
+                {
+                    id: 5,
+                    title: '전지적 독자 시점',
+                    rating: 9.8,
+                    status: '최신화',
+                    gradient: generateRandomGradient(5),
+                    thumbnailUrl: generateRandomImageUrl(5),
+                    day: '월요일',
+                    genre: '판타지',
+                    placement: ['추천', '인기'],
+                    episodes: [
+                        { ep: 1, title: '시작의 끝', duration: '1:34', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+                        { ep: 2, title: '생존의 법칙', duration: '0:52', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
+                    ]
+                },
+                {
+                    id: 6,
+                    title: '나 혼자만 레벨업',
+                    rating: 9.9,
+                    status: '완결',
+                    gradient: generateRandomGradient(6),
+                    thumbnailUrl: generateRandomImageUrl(6),
+                    day: '화요일',
+                    genre: '액션',
+                    placement: ['인기', '최신'],
+                    episodes: [
+                        { ep: 1, title: '최약의 헌터', duration: '0:15', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
+                    ]
+                },
+                {
+                    id: 7,
+                    title: '화산귀환',
+                    rating: 9.7,
+                    status: '시청중',
+                    gradient: generateRandomGradient(7),
+                    thumbnailUrl: generateRandomImageUrl(7),
+                    day: '수요일',
+                    genre: '무협',
+                    placement: ['추천', '인기'],
+                    episodes: [
+                        { ep: 1, title: '귀환', duration: '0:52', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' },
+                    ]
+                },
+                {
+                    id: 8,
+                    title: '괴력 난신',
+                    rating: 9.5,
+                    status: '무료',
+                    gradient: generateRandomGradient(8),
+                    thumbnailUrl: generateRandomImageUrl(8),
+                    day: '목요일',
+                    genre: '로맨스',
+                    placement: ['최신', '인기'],
+                    episodes: [
+                        { ep: 1, title: '운명의 시작', duration: '1:34', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+                    ]
+                },
+                {
+                    id: 9,
+                    title: '이태원 클라쓰',
+                    rating: 9.3,
+                    status: '완결',
+                    gradient: generateRandomGradient(9),
+                    thumbnailUrl: generateRandomImageUrl(9),
+                    day: '금요일',
+                    genre: '드라마',
+                    placement: ['인기'],
+                    episodes: [
+                        { ep: 1, title: '첫 만남', duration: '1:12', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+                    ]
+                },
+                {
+                    id: 10,
+                    title: '재벌집 막내아들',
+                    rating: 9.6,
+                    status: '최신화',
+                    gradient: generateRandomGradient(10),
+                    thumbnailUrl: generateRandomImageUrl(10),
+                    day: '토요일',
+                    genre: '판타지',
+                    placement: ['인기', '추천'],
+                    episodes: [
+                        { ep: 1, title: '회귀', duration: '0:58', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
+                    ]
+                },
+                {
+                    id: 11,
+                    title: '신의 탑',
+                    rating: 9.4,
+                    status: '시청중',
+                    gradient: generateRandomGradient(11),
+                    thumbnailUrl: generateRandomImageUrl(11),
+                    day: '일요일',
+                    genre: '판타지',
+                    placement: ['인기', '추천'],
+                    episodes: [
+                        { ep: 1, title: '탑의 시작', duration: '1:20', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' },
+                    ]
+                },
+                {
+                    id: 12,
+                    title: '나노리스트',
+                    rating: 9.2,
+                    status: '최신화',
+                    gradient: generateRandomGradient(12),
+                    thumbnailUrl: generateRandomImageUrl(12),
+                    day: '월요일',
+                    genre: '액션',
+                    placement: ['인기', '최신', '추천'],
+                    episodes: [
+                        { ep: 1, title: '각성', duration: '0:45', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
+                    ]
+                },
+                {
+                    id: 13,
+                    title: '바람의 나라',
+                    rating: 8.9,
+                    status: '완결',
+                    gradient: generateRandomGradient(13),
+                    thumbnailUrl: generateRandomImageUrl(13),
+                    day: '화요일',
+                    genre: '무협',
+                    placement: ['인기', '추천'],
+                    episodes: [
+                        { ep: 1, title: '전설의 시작', duration: '1:05', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+                    ]
+                },
+                {
+                    id: 14,
+                    title: '외모지상주의',
+                    rating: 9.1,
+                    status: '최신화',
+                    gradient: generateRandomGradient(14),
+                    thumbnailUrl: generateRandomImageUrl(14),
+                    day: '수요일',
+                    genre: '드라마',
+                    placement: ['인기', '추천'],
+                    episodes: [
+                        { ep: 1, title: '두 개의 몸', duration: '0:52', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
+                    ]
+                },
+                {
+                    id: 15,
+                    title: '튜토리얼이 너무 어렵다',
+                    rating: 9.0,
+                    status: '시청중',
+                    gradient: generateRandomGradient(15),
+                    thumbnailUrl: generateRandomImageUrl(15),
+                    day: '목요일',
+                    genre: '판타지',
+                    placement: ['인기', '추천'],
+                    episodes: [
+                        { ep: 1, title: '지옥 튜토리얼', duration: '1:15', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' },
+                    ]
+                },
+                {
+                    id: 16,
+                    title: '참교육',
+                    rating: 9.3,
+                    status: '최신화',
+                    gradient: generateRandomGradient(16),
+                    thumbnailUrl: generateRandomImageUrl(16),
+                    day: '금요일',
+                    genre: '액션',
+                    placement: ['인기', '최신'],
+                    episodes: [
+                        { ep: 1, title: '첫 번째 교육', duration: '0:48', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
+                    ]
+                },
+            ];
+
+            useEffect(() => {
+                // localStorage에서 저장된 데이터 불러오기
+                const savedContent = localStorage.getItem('playmon-content');
+                if (savedContent) {
+                    try {
+                        const loadedContent = JSON.parse(savedContent);
+                        // 4개 고정 작품이 항상 포함되도록 보장
+                        const fixedTitles = ['남궁세가의 제천대성', '사형집행관', '킬러경찰', '악당가문을 갱생시키면'];
+                        const fixedContents = initialContent.filter(c => fixedTitles.includes(c.title));
+                        const otherContents = loadedContent.filter(c => !fixedTitles.includes(c.title));
+                        // 고정 작품을 앞에 배치
+                        setContentList([...fixedContents, ...otherContents]);
+                    } catch (error) {
+                        console.error('데이터 로드 실패:', error);
+                        setContentList(initialContent);
+                    }
+                } else {
+                    setContentList(initialContent);
+                }
+
+                // 즐겨찾기 불러오기
+                const savedFavorites = localStorage.getItem('playmon-favorites');
+                if (savedFavorites) {
+                    try {
+                        setFavorites(JSON.parse(savedFavorites));
+                    } catch (error) {
+                        console.error('즐겨찾기 로드 실패:', error);
+                    }
+                }
+
+                // 시간 업데이트
+                const updateTime = () => {
+                    const now = new Date();
+                    const hours = now.getHours();
+                    const minutes = now.getMinutes();
+                    const ampm = hours >= 12 ? 'PM' : 'AM';
+                    const displayHours = hours % 12 || 12;
+                    const displayMinutes = minutes.toString().padStart(2, '0');
+                    setCurrentTime(`${displayHours}:${displayMinutes} ${ampm}`);
+                };
+                updateTime();
+                const timeInterval = setInterval(updateTime, 60000);
+                
+                // 화면 크기 감지
+                const handleResize = () => {
+                    setIsMobile(window.innerWidth <= 768);
+                };
+                window.addEventListener('resize', handleResize);
+                handleResize();
+                
+                return () => {
+                    clearInterval(timeInterval);
+                    window.removeEventListener('resize', handleResize);
+                };
+            }, []);
+
+            const saveToLocalStorage = (data) => {
+                localStorage.setItem('playmon-content', JSON.stringify(data));
+            };
+
+            const handleEditStart = (content) => {
+                setEditingId(content.id);
+                setEditForm({
+                    ...content,
+                    placement: content.placement || []
+                });
+            };
+
+            const handleEditSave = () => {
+                const updatedList = contentList.map(c =>
+                    c.id === editingId ? { ...editForm } : c
+                );
+                setContentList(updatedList);
+                saveToLocalStorage(updatedList);
+                setEditingId(null);
+                setEditForm({});
+            };
+
+            const handleAddNew = () => {
+                const newId = Math.max(...contentList.map(c => c.id), 0) + 1;
+                const newContent = {
+                    id: newId,
+                    title: '새 콘텐츠',
+                    rating: 0,
+                    status: '최신화',
+                    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    thumbnailUrl: '',
+                    bannerVideoUrl: '',
+                    day: '월요일',
+                    genre: '판타지',
+                    placement: [],
+                    episodes: []
+                };
+                const updatedList = [...contentList, newContent];
+                setContentList(updatedList);
+                saveToLocalStorage(updatedList);
+                setEditingId(newId);
+                setEditForm(newContent);
+                setIsAddingNew(true);
+            };
+
+            const handleDelete = (contentId) => {
+                if(confirm('삭제하시겠습니까?')) {
+                    const updatedList = contentList.filter(c => c.id !== contentId);
+                    setContentList(updatedList);
+                    saveToLocalStorage(updatedList);
+                }
+            };
+
+            const handleReset = () => {
+                if(confirm('모든 데이터를 초기 상태로 되돌리시겠습니까? (저장된 모든 변경사항이 삭제됩니다)')) {
+                    localStorage.removeItem('playmon-content');
+                    setContentList(initialContent);
+                    alert('초기 상태로 복원되었습니다!');
+                }
+            };
+
+            const handleAddEpisode = () => {
+                const newEp = {
+                    ep: (editForm.episodes?.length || 0) + 1,
+                    title: '새 에피소드',
+                    duration: '0:00',
+                    videoUrl: ''
+                };
+                setEditForm({
+                    ...editForm,
+                    episodes: [...(editForm.episodes || []), newEp]
+                });
+            };
+
+            const handleDeleteEpisode = (epIndex) => {
+                setEditForm({
+                    ...editForm,
+                    episodes: editForm.episodes.filter((_, idx) => idx !== epIndex)
+                });
+            };
+
+            const handlePlacementToggle = (placement) => {
+                const current = editForm.placement || [];
+                if (current.includes(placement)) {
+                    setEditForm({
+                        ...editForm,
+                        placement: current.filter(p => p !== placement)
+                    });
+                } else {
+                    setEditForm({
+                        ...editForm,
+                        placement: [...current, placement]
+                    });
+                }
+            };
+
+            const dayMapping = {
+                '월요일': 'MON',
+                '화요일': 'TUE',
+                '수요일': 'WED',
+                '목요일': 'THU',
+                '금요일': 'FRI',
+                '토요일': 'SAT',
+                '일요일': 'SUN'
+            };
+
+            const getFilteredContent = () => {
+                if (selectedDay === '홈') {
+                    return contentList; // 홈에서는 모든 콘텐츠
+                }
+                if (selectedDay === '신작') {
+                    return contentList.filter(c => c.placement?.includes('최신'));
+                }
+                return contentList.filter(c => dayMapping[c.day] === selectedDay);
+            };
+
+            const getFreeContent = () => {
+                // 전지적 독자 시점, 나혼자만레벨업을 포함한 무료 콘텐츠
+                const freeTitles = ['전지적 독자 시점', '나 혼자만 레벨업'];
+                const freeByStatus = contentList.filter(c => c.status === '무료' || c.placement?.includes('무료'));
+                const freeByTitle = contentList.filter(c => freeTitles.includes(c.title));
+                // 중복 제거 후 합치기
+                const allFree = [...new Map([...freeByStatus, ...freeByTitle].map(item => [item.id, item])).values()];
+                return allFree.slice(0, 3);
+            };
+
+            const getRecommendedContent = () => {
+                // 추천 애니메이션 (placement에 '추천'이 있는 작품들)
+                return contentList.filter(c => c.placement?.includes('추천')).slice(0, 10);
+            };
+
+            const getPopularContent = () => {
+                // 고정 작품 4개를 먼저 가져오고, 나머지는 평점 순으로 정렬
+                const fixedTitles = ['남궁세가의 제천대성', '사형집행관', '킬러경찰', '악당가문을 갱생시키면'];
+                const fixedContents = fixedTitles
+                    .map(title => contentList.find(c => c.title === title))
+                    .filter(Boolean);
+                
+                const otherContents = contentList
+                    .filter(c => !fixedTitles.includes(c.title))
+                    .sort((a, b) => b.rating - a.rating)
+                    .slice(0, 6);
+                
+                return [...fixedContents, ...otherContents];
+            };
+
+            const toggleFavorite = (contentId) => {
+                const newFavorites = favorites.includes(contentId)
+                    ? favorites.filter(id => id !== contentId)
+                    : [...favorites, contentId];
+                setFavorites(newFavorites);
+                localStorage.setItem('playmon-favorites', JSON.stringify(newFavorites));
+            };
+
+            const getEpisodeInfo = (content) => {
+                if (!content.episodes || content.episodes.length === 0) return null;
+                const firstEp = content.episodes[0];
+                const lastEp = content.episodes[content.episodes.length - 1];
+                
+                let status = 'free';
+                let statusText = '무료';
+                if (content.status === '시청중') {
+                    status = 'watching';
+                    statusText = '시청중';
+                } else if (content.status === '최신화') {
+                    status = 'upload';
+                    statusText = '업로드';
+                } else if (content.status === '완결') {
+                    status = 'complete';
+                    statusText = '완결';
+                }
+
+                return {
+                    ep: firstEp.ep,
+                    lastEp: lastEp.ep,
+                    status,
+                    statusText
+                };
+            };
+
+            const HomePage = () => {
+                const filteredContent = getFilteredContent();
+                // 하이라이트는 "남궁세가의 제천대성"으로 고정
+                let highlightContent = contentList.find(c => c.title === '남궁세가의 제천대성');
+                // 없으면 initialContent에서 찾기
+                if (!highlightContent) {
+                    highlightContent = initialContent.find(c => c.title === '남궁세가의 제천대성');
+                }
+                // 그래도 없으면 첫 번째 콘텐츠
+                if (!highlightContent) {
+                    highlightContent = contentList[0] || initialContent[0];
+                }
+                const freeContent = getFreeContent();
+                const popularContent = getPopularContent();
+                const recommendedContent = getRecommendedContent();
+                const isHomeTab = selectedDay === '홈';
+
+                return (
+                    <div className="page">
+                        <div className="status-bar">
+                            <span>{currentTime}</span>
+                            <span>🔋 100%</span>
+                        </div>
+                        <div className="header">
+                            <div className="header-content">
+                                <div className="header-left">
+                                    <button className="icon-btn">≡</button>
+                                    <h1 className="logo">PlayMon</h1>
+                                </div>
+                                <div className="header-right">
+                                    <button className="icon-btn">🔍</button>
+                                    <button className="icon-btn">👤</button>
+                                    <button className="admin-btn" onClick={() => setShowAdmin(true)}>
+                                        관리자
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="days-tab">
+                                {['홈', '신작', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(day => (
+                                    <button
+                                        key={day}
+                                        className={`day-btn ${selectedDay === day ? 'active' : ''}`}
+                                        onClick={() => setSelectedDay(day)}
+                                    >
+                                        {day}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {isHomeTab ? (
+                            <>
+                                {/* 홈 화면 - 넷플릭스 스타일 */}
+                                <section className="hero-banner">
+                                    {highlightContent?.bannerVideoUrl ? (
+                                        <>
+                                            {highlightContent.bannerVideoUrl.includes('drive.google.com') ? (
+                                                <iframe
+                                                    src={getGoogleDriveEmbedUrl(highlightContent.bannerVideoUrl, true)}
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        border: 'none',
+                                                        objectFit: 'cover'
+                                                    }}
+                                                    allow="autoplay; fullscreen"
+                                                    allowFullScreen
+                                                />
+                                            ) : (
+                                                <video
+                                                    src={highlightContent.bannerVideoUrl}
+                                                    autoPlay
+                                                    muted
+                                                    loop
+                                                    playsInline
+                                                    onError={(e) => {
+                                                        // 비디오 로드 실패 시 숨김
+                                                        e.target.style.display = 'none';
+                                                    }}
+                                                />
+                                            )}
+                                            <div className="hero-banner-overlay">
+                                                <div style={{fontSize: '13px', marginBottom: '8px'}}>🔥 오늘의 하이라이트</div>
+                                                <h2 className="hero-title">{highlightContent.title}</h2>
+                                                <div style={{fontSize: '14px', marginBottom: '12px'}}>지금 무료 공개!</div>
+                                                <div style={{display: 'flex', gap: '12px'}}>
+                                                    <button className="watch-btn" onClick={() => {
+                                                        setSelectedContent(highlightContent);
+                                                        setCurrentPage('detail');
+                                                    }}>▶ 재생</button>
+                                                    <button className="watch-btn" style={{
+                                                        background: 'rgba(255,255,255,0.3)',
+                                                        color: 'white',
+                                                        border: '1px solid white'
+                                                    }} onClick={() => {
+                                                        setSelectedContent(highlightContent);
+                                                        setCurrentPage('detail');
+                                                    }}>ⓘ 상세 정보</button>
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="hero-banner" style={{
+                                            background: highlightContent?.gradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                                        }}>
+                                            <div className="hero-banner-overlay">
+                                                <div style={{fontSize: '13px', marginBottom: '8px'}}>🔥 오늘의 하이라이트</div>
+                                                <h2 className="hero-title">{highlightContent?.title || '남궁세가의 제천대성'}</h2>
+                                            <div style={{fontSize: '14px', marginBottom: '12px'}}>지금 무료 공개!</div>
+                                            <div style={{display: 'flex', gap: '12px'}}>
+                                                <button className="watch-btn" onClick={() => {
+                                                    if (highlightContent) {
+                                                        setSelectedContent(highlightContent);
+                                                        setCurrentPage('detail');
+                                                    }
+                                                }}>▶ 재생</button>
+                                                <button className="watch-btn" style={{
+                                                    background: 'rgba(255,255,255,0.3)',
+                                                    color: 'white',
+                                                    border: '1px solid white'
+                                                }} onClick={() => {
+                                                    if (highlightContent) {
+                                                        setSelectedContent(highlightContent);
+                                                        setCurrentPage('detail');
+                                                    }
+                                                }}>ⓘ 상세 정보</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    )}
+                                </section>
+
+                                {/* 오늘의 인기 애니메이션 */}
+                                {popularContent.length > 0 && (
+                                    <div className="content-row" style={{marginTop: '24px'}}>
+                                        <h3 className="content-row-title">
+                                            <span className="content-row-title-icon">🔥</span>
+                                            <span>오늘의 인기 애니메이션</span>
+                                        </h3>
+                                        <div className="content-scroll">
+                                            {popularContent.map((content) => {
+                                                const epInfo = getEpisodeInfo(content);
+                                                const thumbnailPath = getThumbnailUrl(content);
+                                                return (
+                                                    <div key={content.id} className="content-card-horizontal" onClick={() => {
+                                                        setSelectedContent(content);
+                                                        setCurrentPage('detail');
+                                                    }}>
+                                                        <div className="thumbnail-horizontal" style={{
+                                                            background: thumbnailPath ? `url(${thumbnailPath})` : (content.thumbnailUrl ? `url(${getGoogleDriveImageUrl(content.thumbnailUrl)})` : content.gradient),
+                                                            backgroundSize: 'cover',
+                                                            backgroundPosition: 'center'
+                                                        }}
+                                                        onError={(e) => {
+                                                            // 이미지 로드 실패 시 그라디언트로 대체
+                                                            e.target.style.background = content.gradient;
+                                                            e.target.style.backgroundSize = 'cover';
+                                                        }}>
+                                                            <div className="rating-badge">⭐ {content.rating}</div>
+                                                            {content.status === '최신화' && (
+                                                                <div className="status-badge">UP</div>
+                                                            )}
+                                                        </div>
+                                                        <div className="card-title">{content.title}</div>
+                                                        {epInfo && (
+                                                            <div className="card-episode-info">
+                                                                <span className={`episode-status ${epInfo.status}`}>
+                                                                    Ep.{epInfo.ep} {epInfo.statusText}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* 지금 무료 공개! */}
+                                {freeContent.length > 0 && (
+                                    <div className="content-row">
+                                        <h3 className="content-row-title">지금 무료 공개!</h3>
+                                        <div className="content-scroll">
+                                            {freeContent.map((content) => {
+                                                const epInfo = getEpisodeInfo(content);
+                                                const thumbnailPath = getThumbnailUrl(content);
+                                                return (
+                                                    <div key={content.id} className="content-card-horizontal" onClick={() => {
+                                                        setSelectedContent(content);
+                                                        setCurrentPage('detail');
+                                                    }}>
+                                                        <div className="thumbnail-horizontal" style={{
+                                                            background: thumbnailPath ? `url(${thumbnailPath})` : (content.thumbnailUrl ? `url(${getGoogleDriveImageUrl(content.thumbnailUrl)})` : content.gradient),
+                                                            backgroundSize: 'cover',
+                                                            backgroundPosition: 'center'
+                                                        }}
+                                                        onError={(e) => {
+                                                            e.target.style.background = content.gradient;
+                                                            e.target.style.backgroundSize = 'cover';
+                                                        }}>
+                                                            <div className="rating-badge">⭐ {content.rating}</div>
+                                                            {content.status === '최신화' && (
+                                                                <div className="status-badge">UP</div>
+                                                            )}
+                                                        </div>
+                                                        <div className="card-title">{content.title}</div>
+                                                        {epInfo && (
+                                                            <div className="card-episode-info">
+                                                                <span className={`episode-status ${epInfo.status}`}>
+                                                                    Ep.{epInfo.ep} {epInfo.statusText}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* 추천 애니메이션 */}
+                                {recommendedContent.length > 0 && (
+                                    <div className="content-row">
+                                        <h3 className="content-row-title">⭐ 추천 애니메이션</h3>
+                                        <div className="content-scroll">
+                                            {recommendedContent.map((content) => {
+                                                const epInfo = getEpisodeInfo(content);
+                                                const thumbnailPath = getThumbnailUrl(content);
+                                                return (
+                                                    <div key={content.id} className="content-card-horizontal" onClick={() => {
+                                                        setSelectedContent(content);
+                                                        setCurrentPage('detail');
+                                                    }}>
+                                                        <div className="thumbnail-horizontal" style={{
+                                                            background: thumbnailPath ? `url(${thumbnailPath})` : (content.thumbnailUrl ? `url(${getGoogleDriveImageUrl(content.thumbnailUrl)})` : content.gradient),
+                                                            backgroundSize: 'cover',
+                                                            backgroundPosition: 'center'
+                                                        }}
+                                                        onError={(e) => {
+                                                            e.target.style.background = content.gradient;
+                                                            e.target.style.backgroundSize = 'cover';
+                                                        }}>
+                                                            <div className="rating-badge">⭐ {content.rating}</div>
+                                                            {content.status === '최신화' && (
+                                                                <div className="status-badge">UP</div>
+                                                            )}
+                                                        </div>
+                                                        <div className="card-title">{content.title}</div>
+                                                        {epInfo && (
+                                                            <div className="card-episode-info">
+                                                                <span className={`episode-status ${epInfo.status}`}>
+                                                                    Ep.{epInfo.ep} {epInfo.statusText}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                {/* 요일별 화면 - 기존 그리드 레이아웃 */}
+                                <section className="content-section">
+                                    <h3 className="section-title">
+                                        🔥 {selectedDay === '신작' ? '신작' : dayMapping[Object.keys(dayMapping).find(k => dayMapping[k] === selectedDay)] || selectedDay}의 인기 애니메이션
+                                    </h3>
+                                    <div className="content-grid">
+                                        {filteredContent.map((content) => {
+                                            const epInfo = getEpisodeInfo(content);
+                                            const thumbnailPath = getThumbnailUrl(content);
+                                            return (
+                                                <div key={content.id} className="content-card" onClick={() => {
+                                                    setSelectedContent(content);
+                                                    setCurrentPage('detail');
+                                                }}>
+                                                    <div className="thumbnail" style={{
+                                                        background: thumbnailPath ? `url(${thumbnailPath})` : (content.thumbnailUrl ? `url(${getGoogleDriveImageUrl(content.thumbnailUrl)})` : content.gradient),
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition: 'center'
+                                                    }}
+                                                    onError={(e) => {
+                                                        e.target.style.background = content.gradient;
+                                                        e.target.style.backgroundSize = 'cover';
+                                                    }}>
+                                                        <div className="rating-badge">⭐ {content.rating}</div>
+                                                        {content.status === '최신화' && (
+                                                            <div className="status-badge">UP</div>
+                                                        )}
+                                                    </div>
+                                                    <div className="card-title">{content.title}</div>
+                                                    {epInfo ? (
+                                                        <div className="card-episode-info">
+                                                            <span className={`episode-status ${epInfo.status}`}>
+                                                                Ep.{epInfo.ep} {epInfo.statusText}
+                                                            </span>
+                                                            {epInfo.lastEp > epInfo.ep && (
+                                                                <span style={{color: '#9ca3af'}}>→</span>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="card-episode">EP.{content.episodes?.length || 0}</div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </section>
+                            </>
+                        )}
+
+                        <BottomNav />
+                    </div>
+                );
+            };
+
+            const BottomNav = () => (
+                <div className="bottom-nav">
+                    <button
+                        className={`nav-item ${bottomNavTab === 'home' ? 'active' : ''}`}
+                        onClick={() => {
+                            setBottomNavTab('home');
+                            setCurrentPage('home');
+                        }}
+                    >
+                        <span className="nav-icon">🏠</span>
+                        <span>홈</span>
+                    </button>
+                    <button
+                        className={`nav-item ${bottomNavTab === 'library' ? 'active' : ''}`}
+                        onClick={() => {
+                            setBottomNavTab('library');
+                            setCurrentPage('library');
+                        }}
+                    >
+                        <span className="nav-icon">📁</span>
+                        <span>보관함</span>
+                    </button>
+                    <button
+                        className={`nav-item ${bottomNavTab === 'charge' ? 'active' : ''}`}
+                        onClick={() => {
+                            setBottomNavTab('charge');
+                            setCurrentPage('charge');
+                        }}
+                    >
+                        <span className="nav-icon">💎</span>
+                        <span>충전</span>
+                    </button>
+                    <button
+                        className={`nav-item ${bottomNavTab === 'settings' ? 'active' : ''}`}
+                        onClick={() => {
+                            setBottomNavTab('settings');
+                            setCurrentPage('settings');
+                        }}
+                    >
+                        <span className="nav-icon">⚙️</span>
+                        <span>설정</span>
+                    </button>
+                </div>
+            );
+
+            const DetailPage = () => {
+                const isFavorite = favorites.includes(selectedContent?.id);
+
+                return (
+                    <div className="page">
+                        <div className="detail-header">
+                            <button onClick={() => {
+                                if (bottomNavTab === 'library') {
+                                    setCurrentPage('library');
+                                } else {
+                                    setCurrentPage('home');
+                                }
+                            }} className="back-btn">←</button>
+                            <h1 style={{fontSize: '18px', fontWeight: 'bold'}}>작품 정보</h1>
+                            <button
+                                className="icon-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleFavorite(selectedContent.id);
+                                }}
+                                style={{marginLeft: 'auto'}}
+                            >
+                                {isFavorite ? '❤️' : '🤍'}
+                            </button>
+                        </div>
+
+                    <div className="detail-content">
+                        <div className="detail-banner" style={{
+                            background: getThumbnailUrl(selectedContent) ? `url(${getThumbnailUrl(selectedContent)})` : (selectedContent.thumbnailUrl ? `url(${getGoogleDriveImageUrl(selectedContent.thumbnailUrl)})` : selectedContent.gradient),
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                        onError={(e) => {
+                            e.target.style.background = selectedContent.gradient;
+                            e.target.style.backgroundSize = 'cover';
+                        }}>
+                            <div style={{textAlign: 'center'}}>
+                                <h2 className="banner-title" style={{
+                                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+                                }}>{selectedContent.title}</h2>
+                                <div style={{fontSize: '20px', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>⭐ {selectedContent.rating}</div>
+                            </div>
+                        </div>
+
+                        <h3 style={{fontSize: '18px', fontWeight: 'bold', marginBottom: '12px'}}>에피소드</h3>
+                        <div className="episodes-list">
+                            {selectedContent.episodes?.map((ep) => (
+                                <div
+                                    key={ep.ep}
+                                    onClick={() => {
+                                        setSelectedContent({...selectedContent, currentEpisode: ep});
+                                        setCurrentPage('player');
+                                    }}
+                                    className="episode-item"
+                                >
+                                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                                        <div className="play-icon">▶</div>
+                                        <div>
+                                            <div style={{fontWeight: 'bold'}}>EP.{ep.ep} {ep.title}</div>
+                                            <div style={{fontSize: '13px', color: '#6b7280'}}>{ep.duration}</div>
+                                        </div>
+                                    </div>
+                                    <span>→</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <BottomNav />
+                </div>
+                );
+            };
+
+            const LibraryPage = () => {
+                const favoriteContents = contentList.filter(c => favorites.includes(c.id));
+
+                return (
+                    <div className="page">
+                        <div className="header">
+                            <div className="header-content">
+                                <div className="header-left">
+                                    <button className="icon-btn" onClick={() => {
+                                        setCurrentPage('home');
+                                        setBottomNavTab('home');
+                                    }}>←</button>
+                                    <h1 style={{fontSize: '18px', fontWeight: 'bold'}}>보관함</h1>
+                                </div>
+                            </div>
+                        </div>
+
+                        <section className="content-section">
+                            <h3 className="section-title">즐겨찾기 ({favoriteContents.length}개)</h3>
+                            {favoriteContents.length === 0 ? (
+                                <div style={{textAlign: 'center', padding: '40px', color: '#6b7280'}}>
+                                    <div style={{fontSize: '48px', marginBottom: '16px'}}>📁</div>
+                                    <div>즐겨찾기한 콘텐츠가 없습니다.</div>
+                                    <div style={{fontSize: '14px', marginTop: '8px'}}>콘텐츠를 즐겨찾기에 추가해보세요!</div>
+                                </div>
+                            ) : (
+                                <div className="content-grid">
+                                    {favoriteContents.map((content) => {
+                                        const epInfo = getEpisodeInfo(content);
+                                        const thumbnailPath = getThumbnailUrl(content);
+                                        return (
+                                            <div key={content.id} className="content-card" onClick={() => {
+                                                setSelectedContent(content);
+                                                setCurrentPage('detail');
+                                            }}>
+                                                <div className="thumbnail" style={{
+                                                    background: thumbnailPath ? `url(${thumbnailPath})` : (content.thumbnailUrl ? `url(${getGoogleDriveImageUrl(content.thumbnailUrl)})` : content.gradient),
+                                                    backgroundSize: 'cover',
+                                                    backgroundPosition: 'center'
+                                                }}
+                                                onError={(e) => {
+                                                    e.target.style.background = content.gradient;
+                                                    e.target.style.backgroundSize = 'cover';
+                                                }}>
+                                                    <div className="rating-badge">⭐ {content.rating}</div>
+                                                    {content.status === '최신화' && (
+                                                        <div className="status-badge">UP</div>
+                                                    )}
+                                                </div>
+                                                <div className="card-title">{content.title}</div>
+                                                {epInfo ? (
+                                                    <div className="card-episode-info">
+                                                        <span className={`episode-status ${epInfo.status}`}>
+                                                            Ep.{epInfo.ep} {epInfo.statusText}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="card-episode">EP.{content.episodes?.length || 0}</div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </section>
+
+                        <BottomNav />
+                    </div>
+                );
+            };
+
+            const ChargePage = () => (
+                <div className="page">
+                    <div className="header">
+                        <div className="header-content">
+                            <div className="header-left">
+                                <button className="icon-btn" onClick={() => {
+                                    setCurrentPage('home');
+                                    setBottomNavTab('home');
+                                }}>←</button>
+                                <h1 style={{fontSize: '18px', fontWeight: 'bold'}}>충전</h1>
+                            </div>
+                        </div>
+                    </div>
+
+                    <section className="content-section">
+                        <div style={{textAlign: 'center', padding: '60px 20px'}}>
+                            <div style={{fontSize: '64px', marginBottom: '24px'}}>💎</div>
+                            <h2 style={{fontSize: '24px', fontWeight: 'bold', marginBottom: '12px'}}>코인 충전</h2>
+                            <p style={{color: '#6b7280', marginBottom: '32px'}}>
+                                애니메이션을 시청하기 위해 코인이 필요합니다.
+                            </p>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(2, 1fr)',
+                                gap: '16px',
+                                maxWidth: '400px',
+                                margin: '0 auto'
+                            }}>
+                                {[
+                                    {amount: '100', price: '₩1,000'},
+                                    {amount: '500', price: '₩4,500'},
+                                    {amount: '1,000', price: '₩8,000'},
+                                    {amount: '2,000', price: '₩15,000'}
+                                ].map((pkg, idx) => (
+                                    <div
+                                        key={idx}
+                                        style={{
+                                            border: '2px solid #e5e5e5',
+                                            borderRadius: '12px',
+                                            padding: '20px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s'
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.borderColor = '#3b82f6'}
+                                        onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e5e5e5'}
+                                    >
+                                        <div style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '8px'}}>
+                                            {pkg.amount} 코인
+                                        </div>
+                                        <div style={{color: '#3b82f6', fontWeight: 'bold'}}>{pkg.price}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div style={{
+                                marginTop: '32px',
+                                padding: '16px',
+                                background: '#f3f4f6',
+                                borderRadius: '8px',
+                                fontSize: '14px',
+                                color: '#6b7280'
+                            }}>
+                                ⚠️ 데모 버전에서는 실제 결제가 이루어지지 않습니다.
+                            </div>
+                        </div>
+                    </section>
+
+                    <BottomNav />
+                </div>
+            );
+
+            const SettingsPage = () => {
+                const [darkMode, setDarkMode] = useState(false);
+
+                return (
+                    <div className="page">
+                        <div className="header">
+                            <div className="header-content">
+                                <div className="header-left">
+                                    <button className="icon-btn" onClick={() => {
+                                        setCurrentPage('home');
+                                        setBottomNavTab('home');
+                                    }}>←</button>
+                                    <h1 style={{fontSize: '18px', fontWeight: 'bold'}}>설정</h1>
+                                </div>
+                            </div>
+                        </div>
+
+                        <section className="content-section">
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
+                                <div style={{
+                                    background: '#f9fafb',
+                                    padding: '16px',
+                                    borderRadius: '12px',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <div>
+                                        <div style={{fontWeight: 'bold', marginBottom: '4px'}}>다크 모드</div>
+                                        <div style={{fontSize: '12px', color: '#6b7280'}}>어두운 테마로 전환</div>
+                                    </div>
+                                    <button
+                                        onClick={() => setDarkMode(!darkMode)}
+                                        style={{
+                                            width: '48px',
+                                            height: '28px',
+                                            borderRadius: '14px',
+                                            background: darkMode ? '#3b82f6' : '#d1d5db',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            position: 'relative',
+                                            transition: 'background 0.2s'
+                                        }}
+                                    >
+                                        <div style={{
+                                            width: '24px',
+                                            height: '24px',
+                                            borderRadius: '50%',
+                                            background: 'white',
+                                            position: 'absolute',
+                                            top: '2px',
+                                            left: darkMode ? '22px' : '2px',
+                                            transition: 'left 0.2s'
+                                        }} />
+                                    </button>
+                                </div>
+
+                                <div style={{
+                                    background: '#f9fafb',
+                                    padding: '16px',
+                                    borderRadius: '12px'
+                                }}>
+                                    <div style={{fontWeight: 'bold', marginBottom: '8px'}}>알림 설정</div>
+                                    <div style={{fontSize: '12px', color: '#6b7280'}}>새 에피소드 업로드 알림 받기</div>
+                                </div>
+
+                                <div style={{
+                                    background: '#f9fafb',
+                                    padding: '16px',
+                                    borderRadius: '12px'
+                                }}>
+                                    <div style={{fontWeight: 'bold', marginBottom: '8px'}}>자동 재생</div>
+                                    <div style={{fontSize: '12px', color: '#6b7280'}}>다음 에피소드 자동 재생</div>
+                                </div>
+
+                                <div style={{
+                                    background: '#f9fafb',
+                                    padding: '16px',
+                                    borderRadius: '12px',
+                                    textAlign: 'center',
+                                    color: '#6b7280',
+                                    fontSize: '14px'
+                                }}>
+                                    버전 1.0.0 (MVP 데모)
+                                </div>
+                            </div>
+                        </section>
+
+                        <BottomNav />
+                    </div>
+                );
+            };
+
+            const getYouTubeEmbedUrl = (url) => {
+                if (!url) return null;
+
+                // YouTube Shorts: youtube.com/shorts/VIDEO_ID
+                const shortsMatch = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/);
+                if (shortsMatch) return `https://www.youtube.com/embed/${shortsMatch[1]}`;
+
+                // YouTube Watch: youtube.com/watch?v=VIDEO_ID
+                const watchMatch = url.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/);
+                if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
+
+                // YouTube Short URL: youtu.be/VIDEO_ID
+                const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+                if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
+
+                return null;
+            };
+
+            const getGoogleDriveEmbedUrl = (url, autoplay = true) => {
+                if (!url) return null;
+
+                // 구글 드라이브 링크에서 파일 ID 추출
+                // 형식: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+                const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                if (fileIdMatch) {
+                    const fileId = fileIdMatch[1];
+                    // iframe으로 재생 가능한 preview 링크로 변환
+                    // autoplay와 mute 파라미터 추가
+                    const params = autoplay ? '?autoplay=1&mute=1' : '';
+                    return `https://drive.google.com/file/d/${fileId}/preview${params}`;
+                }
+
+                // 다른 형식: /open?id=FILE_ID
+                const openMatch = url.match(/\/open\?id=([a-zA-Z0-9_-]+)/);
+                if (openMatch) {
+                    const params = autoplay ? '?autoplay=1&mute=1' : '';
+                    return `https://drive.google.com/file/d/${openMatch[1]}/preview${params}`;
+                }
+
+                return null;
+            };
+
+            const convertGoogleDriveUrl = (url) => {
+                if (!url) return url;
+
+                // 구글 드라이브 링크인 경우 직접 스트리밍 링크로 변환 시도
+                const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                if (fileIdMatch) {
+                    const fileId = fileIdMatch[1];
+                    // 직접 스트리밍 링크 (일부 브라우저에서 작동)
+                    return `https://drive.google.com/uc?export=view&id=${fileId}`;
+                }
+
+                const openMatch = url.match(/\/open\?id=([a-zA-Z0-9_-]+)/);
+                if (openMatch) {
+                    return `https://drive.google.com/uc?export=view&id=${openMatch[1]}`;
+                }
+
+                return url;
+            };
+
+            const PlayerPage = () => {
+                // 폴더 비디오 파일 경로 우선 사용
+                const folderVideoUrl = getEpisodeVideoUrl(selectedContent, selectedContent.currentEpisode);
+                const videoUrl = folderVideoUrl || selectedContent.currentEpisode.videoUrl;
+                
+                // 로컬 파일인지 확인 (상대 경로 또는 ./로 시작)
+                const isLocalFile = videoUrl && (videoUrl.startsWith('./') || (!videoUrl.startsWith('http') && !videoUrl.startsWith('//')));
+                
+                const youtubeEmbedUrl = !isLocalFile ? getYouTubeEmbedUrl(videoUrl) : null;
+                const googleDriveEmbedUrl = !isLocalFile ? getGoogleDriveEmbedUrl(videoUrl, true) : null; // autoplay 활성화
+                const isYouTube = !!youtubeEmbedUrl;
+                const isGoogleDrive = !!googleDriveEmbedUrl;
+                
+                // 구글 드라이브가 아닌 경우 직접 재생 링크로 변환 시도
+                const convertedVideoUrl = (!isLocalFile && !isGoogleDrive && videoUrl && videoUrl.includes('drive.google.com')) 
+                    ? convertGoogleDriveUrl(videoUrl) 
+                    : videoUrl;
+
+                return (
+                    <div className="player-page">
+                        <div className="player-header">
+                            <button onClick={() => setCurrentPage('detail')} className="back-btn" style={{color: 'white'}}>←</button>
+                            <div>
+                                <div style={{fontWeight: 'bold'}}>{selectedContent.title}</div>
+                                <div style={{fontSize: '14px', color: '#d1d5db'}}>EP.{selectedContent.currentEpisode.ep} {selectedContent.currentEpisode.title}</div>
+                            </div>
+                        </div>
+
+                        <div className="video-container">
+                            {isYouTube ? (
+                                <iframe
+                                    key={youtubeEmbedUrl}
+                                    className="video-player"
+                                    src={youtubeEmbedUrl}
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    style={{width: '100%', height: '100%', minHeight: '400px'}}
+                                />
+                            ) : isGoogleDrive ? (
+                                <iframe
+                                    key={googleDriveEmbedUrl}
+                                    className="video-player"
+                                    src={googleDriveEmbedUrl}
+                                    frameBorder="0"
+                                    allow="autoplay; fullscreen"
+                                    allowFullScreen
+                                    style={{width: '100%', height: '100%', minHeight: '400px'}}
+                                />
+                            ) : (
+                                <video
+                                    key={convertedVideoUrl}
+                                    className="video-player"
+                                    controls
+                                    autoPlay
+                                    playsInline
+                                    {...(isLocalFile ? {} : { crossOrigin: "anonymous" })}
+                                >
+                                    <source src={convertedVideoUrl} type="video/mp4" />
+                                    {!isLocalFile && (
+                                        <>
+                                            <source src={convertedVideoUrl} type="video/webm" />
+                                            <source src={convertedVideoUrl} type="video/ogg" />
+                                        </>
+                                    )}
+                                    비디오를 재생할 수 없습니다. 브라우저가 비디오 태그를 지원하지 않습니다.
+                                </video>
+                            )}
+                        </div>
+
+                        <div className="player-footer">
+                            {selectedContent.currentEpisode.ep < selectedContent.episodes.length && (
+                                <button
+                                    onClick={() => {
+                                        const nextEp = selectedContent.episodes[selectedContent.currentEpisode.ep];
+                                        if (nextEp) {
+                                            setSelectedContent({...selectedContent, currentEpisode: nextEp});
+                                        }
+                                    }}
+                                    className="next-episode-btn"
+                                >
+                                    ▶ 다음 에피소드 재생
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                );
+            };
+
+            const AdminModal = () => (
+                <div className="admin-overlay" onClick={() => setShowAdmin(false)}>
+                    <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="admin-header">
+                            <h2>콘텐츠 관리</h2>
+                            <button onClick={() => setShowAdmin(false)} className="close-btn">✕</button>
+                        </div>
+                        <div className="admin-content">
+                            <div style={{display: 'flex', gap: '12px', marginBottom: '20px'}}>
+                                <button
+                                    onClick={handleAddNew}
+                                    style={{
+                                        flex: 1,
+                                        padding: '16px',
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '12px',
+                                        fontWeight: 'bold',
+                                        fontSize: '16px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    ➕ 새 콘텐츠 추가
+                                </button>
+                                <button
+                                    onClick={handleReset}
+                                    style={{
+                                        padding: '16px 24px',
+                                        background: '#ef4444',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '12px',
+                                        fontWeight: 'bold',
+                                        fontSize: '16px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    🔄 초기화
+                                </button>
+                            </div>
+
+                            {contentList.map((content) => (
+                                <div key={content.id} className="admin-item">
+                                    {editingId === content.id ? (
+                                        // 편집 모드
+                                        <div>
+                                            <h3 style={{marginBottom: '16px', fontSize: '18px', fontWeight: 'bold'}}>
+                                                콘텐츠 편집
+                                            </h3>
+
+                                            {/* 기본 정보 */}
+                                            <div style={{marginBottom: '12px'}}>
+                                                <label style={{display: 'block', marginBottom: '4px', fontWeight: 'bold', fontSize: '14px'}}>
+                                                    제목
+                                                </label>
+                                                <input
+                                                    key="content-title"
+                                                    className="form-input"
+                                                    defaultValue={editForm.title || ''}
+                                                    onBlur={(e) => setEditForm({...editForm, title: e.target.value})}
+                                                    placeholder="콘텐츠 제목"
+                                                />
+                                            </div>
+
+                                            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px'}}>
+                                                <div>
+                                                    <label style={{display: 'block', marginBottom: '4px', fontWeight: 'bold', fontSize: '14px'}}>
+                                                        평점
+                                                    </label>
+                                                    <input
+                                                        key="content-rating"
+                                                        className="form-input"
+                                                        type="number"
+                                                        step="0.1"
+                                                        min="0"
+                                                        max="10"
+                                                        defaultValue={editForm.rating || 0}
+                                                        onBlur={(e) => setEditForm({...editForm, rating: parseFloat(e.target.value)})}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label style={{display: 'block', marginBottom: '4px', fontWeight: 'bold', fontSize: '14px'}}>
+                                                        상태
+                                                    </label>
+                                                    <select
+                                                        className="form-input"
+                                                        value={editForm.status || '최신화'}
+                                                        onChange={(e) => setEditForm({...editForm, status: e.target.value})}
+                                                    >
+                                                        <option>최신화</option>
+                                                        <option>완결</option>
+                                                        <option>시청중</option>
+                                                        <option>무료</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            {/* 썸네일 설정 */}
+                                            <div style={{marginBottom: '12px'}}>
+                                                <label style={{display: 'block', marginBottom: '4px', fontWeight: 'bold', fontSize: '14px'}}>
+                                                    썸네일 이미지 (정사각형 권장)
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="form-input"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files[0];
+                                                        if (file) {
+                                                            const reader = new FileReader();
+                                                            reader.onload = (event) => {
+                                                                setEditForm({...editForm, thumbnailUrl: event.target.result});
+                                                            };
+                                                            reader.readAsDataURL(file);
+                                                        }
+                                                    }}
+                                                    style={{marginBottom: '8px'}}
+                                                />
+                                                {editForm.thumbnailUrl && (
+                                                    <button
+                                                        onClick={() => setEditForm({...editForm, thumbnailUrl: ''})}
+                                                        style={{
+                                                            padding: '6px 12px',
+                                                            background: '#ef4444',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '6px',
+                                                            fontSize: '12px',
+                                                            cursor: 'pointer',
+                                                            marginBottom: '8px'
+                                                        }}
+                                                    >
+                                                        이미지 제거
+                                                    </button>
+                                                )}
+                                                <label style={{display: 'block', marginTop: '12px', marginBottom: '4px', fontWeight: 'bold', fontSize: '14px'}}>
+                                                    또는 그라디언트 선택
+                                                </label>
+                                                <select
+                                                    className="form-input"
+                                                    value={editForm.gradient || ''}
+                                                    onChange={(e) => setEditForm({...editForm, gradient: e.target.value, thumbnailUrl: ''})}
+                                                >
+                                                    <option value="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">보라-퍼플</option>
+                                                    <option value="linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)">딥블루</option>
+                                                    <option value="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">핑크-레드</option>
+                                                    <option value="linear-gradient(135deg, #fa709a 0%, #fee140 100%)">핑크-옐로우</option>
+                                                    <option value="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">블루-시안</option>
+                                                    <option value="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)">그린-민트</option>
+                                                    <option value="linear-gradient(135deg, #fa8bff 0%, #2bd2ff 90%)">퍼플-블루</option>
+                                                </select>
+                                                <div style={{
+                                                    marginTop: '8px',
+                                                    width: '200px',
+                                                    height: '200px',
+                                                    borderRadius: '12px',
+                                                    background: editForm.thumbnailUrl ? `url(${editForm.thumbnailUrl})` : editForm.gradient,
+                                                    backgroundSize: 'cover',
+                                                    backgroundPosition: 'center',
+                                                    border: '2px solid #e5e5e5'
+                                                }}></div>
+                                            </div>
+
+                                            {/* 배너 비디오 URL */}
+                                            <div style={{marginBottom: '12px'}}>
+                                                <label style={{display: 'block', marginBottom: '4px', fontWeight: 'bold', fontSize: '14px'}}>
+                                                    배너 비디오 URL (메인 배너용 숏폼 예고편)
+                                                </label>
+                                                <input
+                                                    className="form-input"
+                                                    placeholder="비디오 URL 입력 (예: https://example.com/video.mp4)"
+                                                    defaultValue={editForm.bannerVideoUrl || ''}
+                                                    onBlur={(e) => setEditForm({...editForm, bannerVideoUrl: e.target.value})}
+                                                />
+                                                <div style={{fontSize: '12px', color: '#6b7280', marginTop: '4px'}}>
+                                                    메인 배너에 자동 재생될 비디오 URL을 입력하세요. 비워두면 그라디언트 배경이 표시됩니다.
+                                                </div>
+                                            </div>
+
+                                            {/* 요일 및 장르 */}
+                                            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px'}}>
+                                                <div>
+                                                    <label style={{display: 'block', marginBottom: '4px', fontWeight: 'bold', fontSize: '14px'}}>
+                                                        요일
+                                                    </label>
+                                                    <select
+                                                        className="form-input"
+                                                        value={editForm.day || '월요일'}
+                                                        onChange={(e) => setEditForm({...editForm, day: e.target.value})}
+                                                    >
+                                                        <option>월요일</option>
+                                                        <option>화요일</option>
+                                                        <option>수요일</option>
+                                                        <option>목요일</option>
+                                                        <option>금요일</option>
+                                                        <option>토요일</option>
+                                                        <option>일요일</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label style={{display: 'block', marginBottom: '4px', fontWeight: 'bold', fontSize: '14px'}}>
+                                                        장르
+                                                    </label>
+                                                    <select
+                                                        className="form-input"
+                                                        value={editForm.genre || '판타지'}
+                                                        onChange={(e) => setEditForm({...editForm, genre: e.target.value})}
+                                                    >
+                                                        <option>판타지</option>
+                                                        <option>액션</option>
+                                                        <option>무협</option>
+                                                        <option>로맨스</option>
+                                                        <option>드라마</option>
+                                                        <option>코미디</option>
+                                                        <option>스릴러</option>
+                                                        <option>공포</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            {/* 배치 위치 */}
+                                            <div style={{marginBottom: '12px'}}>
+                                                <label style={{display: 'block', marginBottom: '8px', fontWeight: 'bold', fontSize: '14px'}}>
+                                                    배치 위치 (중복 선택 가능)
+                                                </label>
+                                                <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap'}}>
+                                                    {['추천', '인기', '최신', '무료'].map(p => (
+                                                        <button
+                                                            key={p}
+                                                            onClick={() => handlePlacementToggle(p)}
+                                                            style={{
+                                                                padding: '8px 16px',
+                                                                borderRadius: '20px',
+                                                                border: '2px solid #3b82f6',
+                                                                background: (editForm.placement || []).includes(p) ? '#3b82f6' : 'white',
+                                                                color: (editForm.placement || []).includes(p) ? 'white' : '#3b82f6',
+                                                                fontWeight: 'bold',
+                                                                cursor: 'pointer',
+                                                                fontSize: '13px'
+                                                            }}
+                                                        >
+                                                            {p}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* 에피소드 관리 */}
+                                            <div style={{marginBottom: '16px', padding: '16px', background: '#f9fafb', borderRadius: '8px'}}>
+                                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px'}}>
+                                                    <label style={{fontWeight: 'bold', fontSize: '16px'}}>
+                                                        에피소드 ({editForm.episodes?.length || 0}개)
+                                                    </label>
+                                                    <button
+                                                        onClick={handleAddEpisode}
+                                                        style={{
+                                                            padding: '6px 12px',
+                                                            background: '#10b981',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '6px',
+                                                            fontWeight: 'bold',
+                                                            cursor: 'pointer',
+                                                            fontSize: '13px'
+                                                        }}
+                                                    >
+                                                        + 에피소드 추가
+                                                    </button>
+                                                </div>
+
+                                                {(editForm.episodes || []).map((ep, idx) => (
+                                                    <div key={idx} style={{
+                                                        background: 'white',
+                                                        padding: '12px',
+                                                        borderRadius: '8px',
+                                                        marginBottom: '8px',
+                                                        border: '1px solid #e5e5e5'
+                                                    }}>
+                                                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
+                                                            <strong>에피소드 {ep.ep}</strong>
+                                                            <button
+                                                                onClick={() => handleDeleteEpisode(idx)}
+                                                                style={{
+                                                                    background: '#ef4444',
+                                                                    color: 'white',
+                                                                    border: 'none',
+                                                                    padding: '4px 8px',
+                                                                    borderRadius: '4px',
+                                                                    cursor: 'pointer',
+                                                                    fontSize: '12px'
+                                                                }}
+                                                            >
+                                                                삭제
+                                                            </button>
+                                                        </div>
+                                                        <input
+                                                            key={`title-${idx}`}
+                                                            className="form-input"
+                                                            placeholder="에피소드 제목"
+                                                            defaultValue={ep.title}
+                                                            onBlur={(e) => {
+                                                                const newEpisodes = [...editForm.episodes];
+                                                                newEpisodes[idx].title = e.target.value;
+                                                                setEditForm({...editForm, episodes: newEpisodes});
+                                                            }}
+                                                        />
+                                                        <input
+                                                            key={`duration-${idx}`}
+                                                            className="form-input"
+                                                            placeholder="재생 시간 (예: 1:34)"
+                                                            defaultValue={ep.duration}
+                                                            onBlur={(e) => {
+                                                                const newEpisodes = [...editForm.episodes];
+                                                                newEpisodes[idx].duration = e.target.value;
+                                                                setEditForm({...editForm, episodes: newEpisodes});
+                                                            }}
+                                                        />
+                                                        <input
+                                                            key={`video-${idx}`}
+                                                            className="form-input"
+                                                            placeholder="영상 URL (YouTube 링크 또는 직접 URL)"
+                                                            defaultValue={ep.videoUrl}
+                                                            onBlur={(e) => {
+                                                                const newEpisodes = [...editForm.episodes];
+                                                                newEpisodes[idx].videoUrl = e.target.value;
+                                                                setEditForm({...editForm, episodes: newEpisodes});
+                                                            }}
+                                                        />
+                                                        <div style={{marginTop: '8px'}}>
+                                                            <label style={{display: 'block', marginBottom: '4px', fontSize: '12px', color: '#6b7280'}}>
+                                                                또는 파일 업로드
+                                                            </label>
+                                                            <input
+                                                                type="file"
+                                                                accept="video/*"
+                                                                className="form-input"
+                                                                onChange={(e) => {
+                                                                    const file = e.target.files[0];
+                                                                    if (file) {
+                                                                        const reader = new FileReader();
+                                                                        reader.onload = (event) => {
+                                                                            const newEpisodes = [...editForm.episodes];
+                                                                            newEpisodes[idx].videoUrl = event.target.result;
+                                                                            setEditForm({...editForm, episodes: newEpisodes});
+                                                                        };
+                                                                        reader.readAsDataURL(file);
+                                                                    }
+                                                                }}
+                                                                style={{fontSize: '13px', padding: '8px'}}
+                                                            />
+                                                            {ep.videoUrl && ep.videoUrl.startsWith('data:') && (
+                                                                <div style={{
+                                                                    marginTop: '8px',
+                                                                    padding: '8px',
+                                                                    background: '#f0fdf4',
+                                                                    border: '1px solid #86efac',
+                                                                    borderRadius: '6px',
+                                                                    fontSize: '12px',
+                                                                    color: '#166534'
+                                                                }}>
+                                                                    ✓ 영상 파일 업로드됨
+                                                                </div>
+                                                            )}
+                                                            {ep.videoUrl && !ep.videoUrl.startsWith('data:') && ep.videoUrl.length > 0 && (
+                                                                <div style={{
+                                                                    marginTop: '8px',
+                                                                    padding: '8px',
+                                                                    background: '#eff6ff',
+                                                                    border: '1px solid #93c5fd',
+                                                                    borderRadius: '6px',
+                                                                    fontSize: '12px',
+                                                                    color: '#1e40af'
+                                                                }}>
+                                                                    🔗 URL 링크 사용 중
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* 저장/취소 버튼 */}
+                                            <div className="action-buttons" style={{justifyContent: 'flex-end'}}>
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingId(null);
+                                                        setEditForm({});
+                                                        setIsAddingNew(false);
+                                                    }}
+                                                    style={{
+                                                        padding: '10px 20px',
+                                                        background: '#6b7280',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '6px',
+                                                        fontWeight: 'bold',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    취소
+                                                </button>
+                                                <button className="save-btn" onClick={handleEditSave}>
+                                                    💾 저장
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        // 일반 모드
+                                        <div className="content-row">
+                                            <div className="content-thumbnail" style={{
+                                                background: content.thumbnailUrl ? `url(${content.thumbnailUrl})` : content.gradient,
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center'
+                                            }}></div>
+                                            <div style={{flex: 1}}>
+                                                <div style={{fontWeight: 'bold', fontSize: '16px'}}>{content.title}</div>
+                                                <div style={{fontSize: '14px', color: '#6b7280'}}>
+                                                    평점: {content.rating} · {content.status}
+                                                </div>
+                                                <div style={{fontSize: '12px', color: '#9ca3af', marginTop: '4px'}}>
+                                                    {content.day} · {content.genre} · {content.placement?.join(', ')}
+                                                </div>
+                                            </div>
+                                            <div className="action-buttons">
+                                                <button
+                                                    className="edit-btn"
+                                                    onClick={() => handleEditStart(content)}
+                                                >
+                                                    ✏️ 수정
+                                                </button>
+                                                <button className="delete-btn" onClick={() => handleDelete(content.id)}>
+                                                    🗑️ 삭제
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            if (currentPage === 'home') return (
+                <>
+                    <HomePage />
+                    {showAdmin && <AdminModal />}
+                </>
+            );
+            if (currentPage === 'library') return <LibraryPage />;
+            if (currentPage === 'charge') return <ChargePage />;
+            if (currentPage === 'settings') return <SettingsPage />;
+            if (currentPage === 'detail') return <DetailPage />;
+            if (currentPage === 'player') return <PlayerPage />;
+            return <HomePage />;
+        }
+
+        const WebLayout = () => {
+            const isMobile = window.innerWidth <= 1024;
+            
+            if (isMobile) {
+                return <App />;
+            }
+
+            return (
+                <div className="web-container">
+                    <div className="web-sidebar">
+                        <div>
+                            <div className="platform-logo">PlayMon</div>
+                            <div className="platform-tagline">새로운 웹툰 AI 애니메이션을 경험하세요</div>
+                            
+                            <div className="download-section">
+                                <div className="download-title">앱 다운로드</div>
+                                <div className="download-buttons">
+                                    <a href="#" className="download-btn" onClick={(e) => e.preventDefault()}>
+                                        <span className="download-btn-icon">📱</span>
+                                        <div>
+                                            <div style={{fontSize: '12px', color: '#6b7280'}}>Download on the</div>
+                                            <div style={{fontSize: '16px'}}>Google Play</div>
+                                        </div>
+                                    </a>
+                                    <a href="#" className="download-btn" onClick={(e) => e.preventDefault()}>
+                                        <span className="download-btn-icon">🍎</span>
+                                        <div>
+                                            <div style={{fontSize: '12px', color: '#6b7280'}}>Download on the</div>
+                                            <div style={{fontSize: '16px'}}>App Store</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div className="qr-section">
+                                <div className="qr-title">지금 앱을 다운로드하고<br />더 많은 에피소드를 즐기세요!</div>
+                                <div className="qr-code">
+                                    QR 코드
+                                </div>
+                                <div style={{color: '#9ca3af', fontSize: '12px'}}>QR 코드 스캔</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div className="footer-links">
+                                <a href="#" className="footer-link" onClick={(e) => e.preventDefault()}>이용약관</a>
+                                <a href="#" className="footer-link" onClick={(e) => e.preventDefault()}>개인정보처리방침</a>
+                                <a href="#" className="footer-link" onClick={(e) => e.preventDefault()}>FAQ</a>
+                                <a href="#" className="footer-link" onClick={(e) => e.preventDefault()}>문의하기</a>
+                                <a href="#" className="footer-link" onClick={(e) => e.preventDefault()}>청소년보호정책</a>
+                            </div>
+                            <div className="footer-text">
+                                대표이사: 플레이몬<br />
+                                사업자등록번호: 000-00-00000<br />
+                                통신판매업신고번호: 제0000-서울-0000호<br />
+                                주소: 서울특별시<br />
+                                전화: 0000-0000<br />
+                                이메일: contact@playmon.com
+                            </div>
+                            <div className="footer-text" style={{marginTop: '12px'}}>
+                                Copyright © PlayMon Inc. All rights reserved.
+                            </div>
+                        </div>
+                    </div>
+                    <div className="web-app-container">
+                        <App />
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<WebLayout />, document.getElementById('root'));
+    </script>
+</body>
+</html>
