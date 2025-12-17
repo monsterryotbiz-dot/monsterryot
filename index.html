@@ -184,18 +184,43 @@
         }
 
         @media (max-width: 480px) {
-            .content-card-horizontal {
-                width: 140px;
+            .content-row {
+                display: block;
+                margin-bottom: 20px;
             }
 
             .content-row-title {
                 font-size: 14px;
+                font-weight: 900;
                 padding: 0 8px;
+                margin-bottom: 10px;
+                display: block;
+                width: 100%;
             }
 
             .content-scroll {
-                padding: 0 8px 8px 8px;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
                 gap: 6px;
+                padding: 0 8px;
+                overflow-x: visible;
+                overflow-y: visible;
+            }
+
+            .content-card-horizontal {
+                width: 100%;
+                margin: 0;
+            }
+
+            .thumbnail-horizontal {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 2/3;
+            }
+
+            .card-title {
+                font-size: 11px;
+                line-height: 1.3;
             }
 
             .hero-title {
@@ -663,14 +688,18 @@
             z-index: 10;
         }
 
+        .player-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
         .video-container {
             flex: 1;
             position: relative;
-            width: 100%;
-            height: calc(100vh - 120px);
             background: black;
-            padding: 0;
             overflow: hidden;
+            min-height: calc(100vh - 60px);
         }
 
         .video-player {
@@ -683,9 +712,83 @@
             border-radius: 0;
         }
 
+        .episode-sidebar {
+            width: 360px;
+            background: #1a1a1a;
+            overflow-y: auto;
+            border-left: 1px solid #333;
+        }
+
+        .episode-sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .episode-list {
+            padding: 16px;
+        }
+
+        .episode-item {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .episode-item:hover {
+            background: #3a3a3a;
+        }
+
+        .episode-item.active {
+            background: #4a4a4a;
+            border: 2px solid #667eea;
+        }
+
+        .episode-thumbnail {
+            width: 60px;
+            height: 80px;
+            background: #333;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .episode-info {
+            flex: 1;
+            color: white;
+        }
+
+        .episode-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .episode-duration {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        @media (max-width: 1024px) {
+            .episode-sidebar {
+                display: none;
+            }
+            
+            .video-container {
+                width: 100%;
+            }
+        }
+
         @media (max-width: 768px) {
             .video-container {
-                height: calc(100vh - 100px);
+                min-height: calc(100vh - 60px);
             }
             
             .video-player {
@@ -701,6 +804,12 @@
             max-width: 1200px;
             margin: 0 auto;
             width: 100%;
+        }
+
+        @media (min-width: 1025px) {
+            .player-footer {
+                display: none;
+            }
         }
 
         .next-episode-btn {
@@ -857,24 +966,43 @@
                 display: none;
             }
 
+            .content-row {
+                display: block;
+                margin-bottom: 24px;
+            }
+
             .content-row-title {
                 font-size: 16px;
+                font-weight: 900;
                 padding: 0 12px;
-                margin-bottom: 8px;
+                margin-bottom: 12px;
+                display: block;
+                width: 100%;
             }
 
             .content-scroll {
-                padding: 0 12px 12px 12px;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
                 gap: 8px;
+                padding: 0 12px;
+                overflow-x: visible;
+                overflow-y: visible;
             }
 
             .content-card-horizontal {
-                width: 160px;
+                width: 100%;
+                margin: 0;
+            }
+
+            .thumbnail-horizontal {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 2/3;
             }
 
             .card-title {
-                font-size: 13px;
-                line-height: 1.4;
+                font-size: 12px;
+                line-height: 1.3;
                 word-break: keep-all;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -990,11 +1118,26 @@
                 return url;
             };
 
-            // 랜덤 이미지 URL 생성 함수 (그라디언트 대신)
+            // 제공된 Google Drive 썸네일 링크들
+            const providedThumbnails = [
+                'https://drive.google.com/file/d/1YYam0QaKs29az53FB62PvC_A0voSmrAG/view?usp=drive_link',
+                'https://drive.google.com/file/d/1DhBhNdQb3c6aagraKYUGcheNcOZjblyt/view?usp=drive_link',
+                'https://drive.google.com/file/d/1_MMTeCbQXGHChPlK_b9JzjVHUWP5Amn6/view?usp=drive_link',
+                'https://drive.google.com/file/d/1K-Uw5GJoAtDptQ8ZzoKVR7iWmJxfRKi1/view?usp=drive_link',
+                'https://drive.google.com/file/d/1fxBDpR67z1Spy6PPaZv5a-PRwTOSVZHI/view?usp=drive_link',
+                'https://drive.google.com/file/d/1tjqTM-yd0LEy1NMZWVto2dQfwjLmuIbT/view?usp=drive_link',
+                'https://drive.google.com/file/d/1PNgTUQF9E6VfAZQr0iN3_TEDN07EQxtY/view?usp=drive_link',
+                'https://drive.google.com/file/d/1ojWbQusIiuzU5cY7eAOX7VmHcV3ThNgo/view?usp=drive_link',
+                'https://drive.google.com/file/d/1x-ocLJ12grd97Mwx7ISEU1ps9PsqJZef/view?usp=drive_link',
+                'https://drive.google.com/file/d/1AWOKdublUQtHE_ts-hcAqQFZnWDg9Lcw/view?usp=drive_link',
+                'https://drive.google.com/file/d/1cRhBkwOSCkvjze8-8Sg4V4yg_lw06E6f/view?usp=drive_link'
+            ];
+
+            // 랜덤 이미지 URL 생성 함수 (제공된 Google Drive 썸네일 사용)
             const generateRandomImageUrl = (seed) => {
-                // Picsum Photos 사용 (랜덤 이미지, 시드 기반으로 일관된 이미지)
-                const imageId = 100 + (seed % 900); // 100-999 범위
-                return `https://picsum.photos/seed/${imageId}/400/600`;
+                // 시드를 기반으로 썸네일 선택 (일관성 유지)
+                const index = seed % providedThumbnails.length;
+                return providedThumbnails[index];
             };
 
             // 랜덤 그라디언트 생성 함수
@@ -1113,7 +1256,7 @@
                     rating: 9.6,
                     status: '최신화',
                     gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                    thumbnailUrl: '', // 구글 드라이브 썸네일 링크를 여기에 입력하세요
+                    thumbnailUrl: 'https://drive.google.com/file/d/1asIxHPVa2g7crgGTR1oXYXpGWOn8X6l9/view?usp=drive_link', // 구글 드라이브 썸네일 링크를 여기에 입력하세요
                     folderThumbnail: null,
                     day: '목요일',
                     genre: '로맨스',
@@ -1125,7 +1268,7 @@
                 },
                 {
                     id: 5,
-                    title: '전지적 독자 시점',
+                    title: '절대 생존자의 길',
                     rating: 9.8,
                     status: '최신화',
                     gradient: generateRandomGradient(5),
@@ -1140,7 +1283,7 @@
                 },
                 {
                     id: 6,
-                    title: '나 혼자만 레벨업',
+                    title: '각성자의 귀환',
                     rating: 9.9,
                     status: '완결',
                     gradient: generateRandomGradient(6),
@@ -1154,7 +1297,7 @@
                 },
                 {
                     id: 7,
-                    title: '화산귀환',
+                    title: '무림의 절대강자',
                     rating: 9.7,
                     status: '시청중',
                     gradient: generateRandomGradient(7),
@@ -1168,7 +1311,7 @@
                 },
                 {
                     id: 8,
-                    title: '괴력 난신',
+                    title: '운명의 붉은 실',
                     rating: 9.5,
                     status: '무료',
                     gradient: generateRandomGradient(8),
@@ -1182,7 +1325,7 @@
                 },
                 {
                     id: 9,
-                    title: '이태원 클라쓰',
+                    title: '새벽의 거리',
                     rating: 9.3,
                     status: '완결',
                     gradient: generateRandomGradient(9),
@@ -1196,7 +1339,7 @@
                 },
                 {
                     id: 10,
-                    title: '재벌집 막내아들',
+                    title: '역전의 계승자',
                     rating: 9.6,
                     status: '최신화',
                     gradient: generateRandomGradient(10),
@@ -1210,7 +1353,7 @@
                 },
                 {
                     id: 11,
-                    title: '신의 탑',
+                    title: '하늘의 제왕',
                     rating: 9.4,
                     status: '시청중',
                     gradient: generateRandomGradient(11),
@@ -1224,7 +1367,7 @@
                 },
                 {
                     id: 12,
-                    title: '나노리스트',
+                    title: '미래 전사',
                     rating: 9.2,
                     status: '최신화',
                     gradient: generateRandomGradient(12),
@@ -1238,7 +1381,7 @@
                 },
                 {
                     id: 13,
-                    title: '바람의 나라',
+                    title: '폭풍의 전설',
                     rating: 8.9,
                     status: '완결',
                     gradient: generateRandomGradient(13),
@@ -1252,7 +1395,7 @@
                 },
                 {
                     id: 14,
-                    title: '외모지상주의',
+                    title: '두 얼굴의 사나이',
                     rating: 9.1,
                     status: '최신화',
                     gradient: generateRandomGradient(14),
@@ -1266,7 +1409,7 @@
                 },
                 {
                     id: 15,
-                    title: '튜토리얼이 너무 어렵다',
+                    title: '던전의 시련',
                     rating: 9.0,
                     status: '시청중',
                     gradient: generateRandomGradient(15),
@@ -1280,7 +1423,7 @@
                 },
                 {
                     id: 16,
-                    title: '참교육',
+                    title: '교육의 신',
                     rating: 9.3,
                     status: '최신화',
                     gradient: generateRandomGradient(16),
@@ -1292,6 +1435,109 @@
                         { ep: 1, title: '첫 번째 교육', duration: '0:48', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
                     ]
                 },
+                // 월요일 콘텐츠 추가 (15개)
+                { id: 17, title: '달빛 아래 전설', rating: 9.2, status: '최신화', gradient: generateRandomGradient(17), thumbnailUrl: generateRandomImageUrl(17), day: '월요일', genre: '무협', placement: ['추천'], episodes: [{ ep: 1, title: '시작', duration: '1:20', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 18, title: '검은 용의 후예', rating: 9.1, status: '완결', gradient: generateRandomGradient(18), thumbnailUrl: generateRandomImageUrl(18), day: '월요일', genre: '무협', placement: ['추천'], episodes: [{ ep: 1, title: '환생', duration: '1:15', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 19, title: '마법사의 귀환', rating: 8.9, status: '시청중', gradient: generateRandomGradient(19), thumbnailUrl: generateRandomImageUrl(19), day: '월요일', genre: '판타지', placement: [], episodes: [{ ep: 1, title: '입학', duration: '1:10', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 20, title: '천공의 탑', rating: 9.0, status: '최신화', gradient: generateRandomGradient(20), thumbnailUrl: generateRandomImageUrl(20), day: '월요일', genre: '판타지', placement: ['추천'], episodes: [{ ep: 1, title: '등반 시작', duration: '1:25', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 21, title: '운명의 선택', rating: 8.8, status: '완결', gradient: generateRandomGradient(21), thumbnailUrl: generateRandomImageUrl(21), day: '월요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '선고', duration: '1:30', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 22, title: '별빛 전사', rating: 9.3, status: '최신화', gradient: generateRandomGradient(22), thumbnailUrl: generateRandomImageUrl(22), day: '월요일', genre: '무협', placement: ['추천'], episodes: [{ ep: 1, title: '검의 길', duration: '1:12', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 23, title: '제국의 그림자', rating: 8.7, status: '시청중', gradient: generateRandomGradient(23), thumbnailUrl: generateRandomImageUrl(23), day: '월요일', genre: '판타지', placement: [], episodes: [{ ep: 1, title: '권력 게임', duration: '1:18', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 24, title: '무한 레벨업', rating: 9.1, status: '최신화', gradient: generateRandomGradient(24), thumbnailUrl: generateRandomImageUrl(24), day: '월요일', genre: '판타지', placement: ['추천'], episodes: [{ ep: 1, title: '강화 시작', duration: '1:22', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 25, title: '영원한 전설', rating: 8.9, status: '완결', gradient: generateRandomGradient(25), thumbnailUrl: generateRandomImageUrl(25), day: '월요일', genre: '판타지', placement: [], episodes: [{ ep: 1, title: '영지 개발', duration: '1:28', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 26, title: '차원 정복자', rating: 9.4, status: '최신화', gradient: generateRandomGradient(26), thumbnailUrl: generateRandomImageUrl(26), day: '월요일', genre: '무협', placement: ['추천'], episodes: [{ ep: 1, title: '나노 주입', duration: '1:16', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 27, title: '최강의 힘', rating: 8.6, status: '시청중', gradient: generateRandomGradient(27), thumbnailUrl: generateRandomImageUrl(27), day: '월요일', genre: '판타지', placement: [], episodes: [{ ep: 1, title: '소환', duration: '1:24', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 28, title: '시간 여행자', rating: 9.2, status: '최신화', gradient: generateRandomGradient(28), thumbnailUrl: generateRandomImageUrl(28), day: '월요일', genre: '무협', placement: ['추천'], episodes: [{ ep: 1, title: '미친 듯이 돌아왔다', duration: '1:19', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 29, title: '불멸의 검', rating: 8.8, status: '완결', gradient: generateRandomGradient(29), thumbnailUrl: generateRandomImageUrl(29), day: '월요일', genre: '무협', placement: [], episodes: [{ ep: 1, title: '아버지', duration: '1:27', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                
+                // 화요일 콘텐츠 추가 (15개)
+                { id: 30, title: '새벽의 전설', rating: 9.0, status: '최신화', gradient: generateRandomGradient(30), thumbnailUrl: generateRandomImageUrl(30), day: '화요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '새벽', duration: '1:21', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 31, title: '종말의 시작', rating: 8.9, status: '시청중', gradient: generateRandomGradient(31), thumbnailUrl: generateRandomImageUrl(31), day: '화요일', genre: '액션', placement: [], episodes: [{ ep: 1, title: '발병', duration: '1:14', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 32, title: '격투의 신', rating: 9.3, status: '최신화', gradient: generateRandomGradient(32), thumbnailUrl: generateRandomImageUrl(32), day: '화요일', genre: '액션', placement: ['추천', '인기'], episodes: [{ ep: 1, title: '첫 싸움', duration: '1:17', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 33, title: '일상의 전쟁', rating: 8.7, status: '완결', gradient: generateRandomGradient(33), thumbnailUrl: generateRandomImageUrl(33), day: '화요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '백수의 일상', duration: '1:26', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 34, title: '용병의 길', rating: 9.1, status: '최신화', gradient: generateRandomGradient(34), thumbnailUrl: generateRandomImageUrl(34), day: '화요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '입학', duration: '1:23', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 35, title: '공포의 기억', rating: 8.6, status: '시청중', gradient: generateRandomGradient(35), thumbnailUrl: generateRandomImageUrl(35), day: '화요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '공포', duration: '1:11', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 36, title: '마법 식당', rating: 9.2, status: '최신화', gradient: generateRandomGradient(36), thumbnailUrl: generateRandomImageUrl(36), day: '화요일', genre: '판타지', placement: ['추천'], episodes: [{ ep: 1, title: '첫 요리', duration: '1:29', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 37, title: '전략의 달인', rating: 8.8, status: '완결', gradient: generateRandomGradient(37), thumbnailUrl: generateRandomImageUrl(37), day: '화요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '첫 수', duration: '1:13', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 38, title: '무인의 귀환', rating: 9.0, status: '최신화', gradient: generateRandomGradient(38), thumbnailUrl: generateRandomImageUrl(38), day: '화요일', genre: '무협', placement: ['추천'], episodes: [{ ep: 1, title: '귀환', duration: '1:25', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 39, title: '고독한 등반', rating: 8.9, status: '시청중', gradient: generateRandomGradient(39), thumbnailUrl: generateRandomImageUrl(39), day: '화요일', genre: '판타지', placement: [], episodes: [{ ep: 1, title: '고독', duration: '1:18', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 40, title: '철의 검사', rating: 9.3, status: '최신화', gradient: generateRandomGradient(40), thumbnailUrl: generateRandomImageUrl(40), day: '화요일', genre: '무협', placement: ['추천'], episodes: [{ ep: 1, title: '검의 경지', duration: '1:22', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 41, title: '정글의 왕', rating: 8.5, status: '완결', gradient: generateRandomGradient(41), thumbnailUrl: generateRandomImageUrl(41), day: '화요일', genre: '액션', placement: [], episodes: [{ ep: 1, title: '정글 속으로', duration: '1:16', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 42, title: '추적자', rating: 9.1, status: '최신화', gradient: generateRandomGradient(42), thumbnailUrl: generateRandomImageUrl(42), day: '화요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '추적', duration: '1:24', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                
+                // 수요일 콘텐츠 추가 (15개)
+                { id: 43, title: '학원의 전설', rating: 9.2, status: '완결', gradient: generateRandomGradient(43), thumbnailUrl: generateRandomImageUrl(43), day: '수요일', genre: '드라마', placement: ['추천', '인기'], episodes: [{ ep: 1, title: '복학', duration: '1:19', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 44, title: '최강 격투가', rating: 9.4, status: '최신화', gradient: generateRandomGradient(44), thumbnailUrl: generateRandomImageUrl(44), day: '수요일', genre: '액션', placement: ['추천', '인기'], episodes: [{ ep: 1, title: '대회 시작', duration: '1:27', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 45, title: '천상의 시련', rating: 9.5, status: '최신화', gradient: generateRandomGradient(45), thumbnailUrl: generateRandomImageUrl(45), day: '수요일', genre: '판타지', placement: ['추천', '인기'], episodes: [{ ep: 1, title: '탑 입성', duration: '1:31', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 46, title: '귀족의 각성', rating: 9.1, status: '완결', gradient: generateRandomGradient(46), thumbnailUrl: generateRandomImageUrl(46), day: '수요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '깨어남', duration: '1:15', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 47, title: '강한 자의 비밀', rating: 9.0, status: '최신화', gradient: generateRandomGradient(47), thumbnailUrl: generateRandomImageUrl(47), day: '수요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '시작', duration: '1:21', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 48, title: '자유를 향해', rating: 8.7, status: '시청중', gradient: generateRandomGradient(48), thumbnailUrl: generateRandomImageUrl(48), day: '수요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '독립 준비', duration: '1:12', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 49, title: '어둠의 비밀', rating: 9.3, status: '완결', gradient: generateRandomGradient(49), thumbnailUrl: generateRandomImageUrl(49), day: '수요일', genre: '스릴러', placement: ['추천'], episodes: [{ ep: 1, title: '아버지', duration: '1:28', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 50, title: '계급의 전쟁', rating: 9.2, status: '최신화', gradient: generateRandomGradient(50), thumbnailUrl: generateRandomImageUrl(50), day: '수요일', genre: '드라마', placement: ['추천'], episodes: [{ ep: 1, title: '게임 시작', duration: '1:23', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 51, title: '강호의 전설', rating: 8.9, status: '최신화', gradient: generateRandomGradient(51), thumbnailUrl: generateRandomImageUrl(51), day: '수요일', genre: '무협', placement: [], episodes: [{ ep: 1, title: '강호 입문', duration: '1:17', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 52, title: '우주 배달부', rating: 9.4, status: '최신화', gradient: generateRandomGradient(52), thumbnailUrl: generateRandomImageUrl(52), day: '수요일', genre: 'SF', placement: ['추천'], episodes: [{ ep: 1, title: '우주 배달', duration: '1:26', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 53, title: '디지털 이야기', rating: 8.6, status: '시청중', gradient: generateRandomGradient(53), thumbnailUrl: generateRandomImageUrl(53), day: '수요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '게시판 이야기', duration: '1:14', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 54, title: '특별한 마법', rating: 9.1, status: '최신화', gradient: generateRandomGradient(54), thumbnailUrl: generateRandomImageUrl(54), day: '수요일', genre: '판타지', placement: ['추천'], episodes: [{ ep: 1, title: '귀환', duration: '1:20', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 55, title: '소리없는 외침', rating: 8.8, status: '완결', gradient: generateRandomGradient(55), thumbnailUrl: generateRandomImageUrl(55), day: '수요일', genre: '코미디', placement: [], episodes: [{ ep: 1, title: '일상', duration: '1:09', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                
+                // 목요일 콘텐츠 추가 (15개)
+                { id: 56, title: '감염된 세계', rating: 9.0, status: '최신화', gradient: generateRandomGradient(56), thumbnailUrl: generateRandomImageUrl(56), day: '목요일', genre: 'SF', placement: ['추천'], episodes: [{ ep: 1, title: '감염', duration: '1:22', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 57, title: '자유낙하', rating: 8.9, status: '시청중', gradient: generateRandomGradient(57), thumbnailUrl: generateRandomImageUrl(57), day: '목요일', genre: '액션', placement: [], episodes: [{ ep: 1, title: '자유 낙하', duration: '1:16', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 58, title: '쿨한 전사', rating: 9.2, status: '최신화', gradient: generateRandomGradient(58), thumbnailUrl: generateRandomImageUrl(58), day: '목요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '쿨함의 시작', duration: '1:24', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 59, title: '무한 마력', rating: 8.7, status: '완결', gradient: generateRandomGradient(59), thumbnailUrl: generateRandomImageUrl(59), day: '목요일', genre: '판타지', placement: [], episodes: [{ ep: 1, title: '무한', duration: '1:18', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 60, title: '위험한 게임', rating: 9.1, status: '최신화', gradient: generateRandomGradient(60), thumbnailUrl: generateRandomImageUrl(60), day: '목요일', genre: '스릴러', placement: ['추천'], episodes: [{ ep: 1, title: '첫 살인', duration: '1:25', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 61, title: '정의의 사자', rating: 9.3, status: '최신화', gradient: generateRandomGradient(61), thumbnailUrl: generateRandomImageUrl(61), day: '목요일', genre: '액션', placement: ['추천', '인기'], episodes: [{ ep: 1, title: '테러 시작', duration: '1:27', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 62, title: '역사 채팅', rating: 8.6, status: '시청중', gradient: generateRandomGradient(62), thumbnailUrl: generateRandomImageUrl(62), day: '목요일', genre: '코미디', placement: [], episodes: [{ ep: 1, title: '오픈채팅방', duration: '1:11', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 63, title: '인생 단상', rating: 8.8, status: '완결', gradient: generateRandomGradient(63), thumbnailUrl: generateRandomImageUrl(63), day: '목요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '철학의 시작', duration: '1:13', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 64, title: '달콤한 악몽', rating: 9.4, status: '최신화', gradient: generateRandomGradient(64), thumbnailUrl: generateRandomImageUrl(64), day: '목요일', genre: 'SF', placement: ['추천', '인기'], episodes: [{ ep: 1, title: '이사', duration: '1:29', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 65, title: '군대 생활', rating: 9.0, status: '완결', gradient: generateRandomGradient(65), thumbnailUrl: generateRandomImageUrl(65), day: '목요일', genre: '드라마', placement: ['추천'], episodes: [{ ep: 1, title: '입대', duration: '1:19', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 66, title: '맹수의 힘', rating: 8.9, status: '최신화', gradient: generateRandomGradient(66), thumbnailUrl: generateRandomImageUrl(66), day: '목요일', genre: '액션', placement: [], episodes: [{ ep: 1, title: '형님 등장', duration: '1:21', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 67, title: '정의의 심판', rating: 9.2, status: '완결', gradient: generateRandomGradient(67), thumbnailUrl: generateRandomImageUrl(67), day: '목요일', genre: '드라마', placement: ['추천'], episodes: [{ ep: 1, title: '재판 시작', duration: '1:23', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                
+                // 금요일 콘텐츠 추가 (15개)
+                { id: 68, title: '무적의 존재', rating: 9.1, status: '완결', gradient: generateRandomGradient(68), thumbnailUrl: generateRandomImageUrl(68), day: '금요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '언터처블', duration: '1:26', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 69, title: '야생의 소녀', rating: 8.8, status: '최신화', gradient: generateRandomGradient(69), thumbnailUrl: generateRandomImageUrl(69), day: '금요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '소녀들', duration: '1:15', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 70, title: '웃음의 전설', rating: 9.0, status: '최신화', gradient: generateRandomGradient(70), thumbnailUrl: generateRandomImageUrl(70), day: '금요일', genre: '코미디', placement: ['추천'], episodes: [{ ep: 1, title: '난센스', duration: '1:10', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 71, title: '폭풍의 질주', rating: 9.3, status: '최신화', gradient: generateRandomGradient(71), thumbnailUrl: generateRandomImageUrl(71), day: '금요일', genre: '액션', placement: ['추천', '인기'], episodes: [{ ep: 1, title: '바람', duration: '1:24', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 72, title: '세포의 비밀', rating: 9.2, status: '완결', gradient: generateRandomGradient(72), thumbnailUrl: generateRandomImageUrl(72), day: '금요일', genre: '로맨스', placement: ['추천'], episodes: [{ ep: 1, title: '세포들', duration: '1:17', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 73, title: '스타일의 제왕', rating: 8.7, status: '완결', gradient: generateRandomGradient(73), thumbnailUrl: generateRandomImageUrl(73), day: '금요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '패션의 시작', duration: '1:20', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 74, title: '언데드의 딸', rating: 9.1, status: '최신화', gradient: generateRandomGradient(74), thumbnailUrl: generateRandomImageUrl(74), day: '금요일', genre: 'SF', placement: ['추천'], episodes: [{ ep: 1, title: '감염', duration: '1:22', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 75, title: '어둠의 기사', rating: 8.9, status: '시청중', gradient: generateRandomGradient(75), thumbnailUrl: generateRandomImageUrl(75), day: '금요일', genre: '액션', placement: [], episodes: [{ ep: 1, title: '밤', duration: '1:14', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 76, title: '평범한 영웅', rating: 9.0, status: '완결', gradient: generateRandomGradient(76), thumbnailUrl: generateRandomImageUrl(76), day: '금요일', genre: '코미디', placement: ['추천'], episodes: [{ ep: 1, title: '영웅 등장', duration: '1:18', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 77, title: '금단의 영역', rating: 8.8, status: '최신화', gradient: generateRandomGradient(77), thumbnailUrl: generateRandomImageUrl(77), day: '금요일', genre: '액션', placement: [], episodes: [{ ep: 1, title: '영역 침범', duration: '1:23', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 78, title: '성직자의 길', rating: 9.2, status: '완결', gradient: generateRandomGradient(78), thumbnailUrl: generateRandomImageUrl(78), day: '금요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '신부', duration: '1:25', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 79, title: '판타지 모험', rating: 8.6, status: '시청중', gradient: generateRandomGradient(79), thumbnailUrl: generateRandomImageUrl(79), day: '금요일', genre: '판타지', placement: [], episodes: [{ ep: 1, title: '시작', duration: '1:12', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 80, title: '시선의 힘', rating: 9.1, status: '최신화', gradient: generateRandomGradient(80), thumbnailUrl: generateRandomImageUrl(80), day: '금요일', genre: '드라마', placement: ['추천'], episodes: [{ ep: 1, title: '시선', duration: '1:19', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                
+                // 토요일 콘텐츠 추가 (15개)
+                { id: 81, title: '운명의 주사위', rating: 9.0, status: '최신화', gradient: generateRandomGradient(81), thumbnailUrl: generateRandomImageUrl(81), day: '토요일', genre: '판타지', placement: ['추천'], episodes: [{ ep: 1, title: '주사위', duration: '1:21', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 82, title: '일상의 소소함', rating: 8.7, status: '완결', gradient: generateRandomGradient(82), thumbnailUrl: generateRandomImageUrl(82), day: '토요일', genre: '코미디', placement: [], episodes: [{ ep: 1, title: '일상', duration: '1:08', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 83, title: '생명의 시간', rating: 9.3, status: '최신화', gradient: generateRandomGradient(83), thumbnailUrl: generateRandomImageUrl(83), day: '토요일', genre: '드라마', placement: ['추천', '인기'], episodes: [{ ep: 1, title: '골든 타임', duration: '1:26', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 84, title: '천공의 비밀', rating: 9.1, status: '시청중', gradient: generateRandomGradient(84), thumbnailUrl: generateRandomImageUrl(84), day: '토요일', genre: '판타지', placement: ['추천'], episodes: [{ ep: 1, title: '심연', duration: '1:23', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 85, title: '달인의 길', rating: 9.4, status: '최신화', gradient: generateRandomGradient(85), thumbnailUrl: generateRandomImageUrl(85), day: '토요일', genre: '액션', placement: ['추천', '인기'], episodes: [{ ep: 1, title: '고수의 탄생', duration: '1:28', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 86, title: '운명의 채팅', rating: 9.0, status: '완결', gradient: generateRandomGradient(86), thumbnailUrl: generateRandomImageUrl(86), day: '토요일', genre: '로맨스', placement: ['추천'], episodes: [{ ep: 1, title: '첫 채팅', duration: '1:15', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 87, title: '연의 비밀', rating: 8.8, status: '최신화', gradient: generateRandomGradient(87), thumbnailUrl: generateRandomImageUrl(87), day: '토요일', genre: '액션', placement: [], episodes: [{ ep: 1, title: '연', duration: '1:17', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 88, title: '학교 전쟁', rating: 9.2, status: '최신화', gradient: generateRandomGradient(88), thumbnailUrl: generateRandomImageUrl(88), day: '토요일', genre: 'SF', placement: ['추천'], episodes: [{ ep: 1, title: '전쟁 시작', duration: '1:24', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 89, title: '정글의 학교', rating: 8.9, status: '완결', gradient: generateRandomGradient(89), thumbnailUrl: generateRandomImageUrl(89), day: '토요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '입학', duration: '1:19', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 90, title: '신비한 소문', rating: 9.1, status: '최신화', gradient: generateRandomGradient(90), thumbnailUrl: generateRandomImageUrl(90), day: '토요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '소문', duration: '1:22', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 91, title: '괴이한 이야기', rating: 8.7, status: '완결', gradient: generateRandomGradient(91), thumbnailUrl: generateRandomImageUrl(91), day: '토요일', genre: '공포', placement: [], episodes: [{ ep: 1, title: '괴담', duration: '1:13', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 92, title: '최초의 사냥꾼', rating: 9.0, status: '최신화', gradient: generateRandomGradient(92), thumbnailUrl: generateRandomImageUrl(92), day: '토요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '첫 사냥', duration: '1:25', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 93, title: '운명의 회피', rating: 8.6, status: '시청중', gradient: generateRandomGradient(93), thumbnailUrl: generateRandomImageUrl(93), day: '토요일', genre: '판타지', placement: [], episodes: [{ ep: 1, title: '회피', duration: '1:16', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                
+                // 일요일 콘텐츠 추가 (15개)
+                { id: 94, title: '유령 전사', rating: 9.2, status: '최신화', gradient: generateRandomGradient(94), thumbnailUrl: generateRandomImageUrl(94), day: '일요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '유령', duration: '1:23', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 95, title: '임무의 길', rating: 9.1, status: '시청중', gradient: generateRandomGradient(95), thumbnailUrl: generateRandomImageUrl(95), day: '일요일', genre: '판타지', placement: ['추천'], episodes: [{ ep: 1, title: '퀘스트 수락', duration: '1:20', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 96, title: '함께 공부', rating: 8.8, status: '완결', gradient: generateRandomGradient(96), thumbnailUrl: generateRandomImageUrl(96), day: '일요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '스터디 시작', duration: '1:14', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 97, title: '구원의 손', rating: 9.0, status: '최신화', gradient: generateRandomGradient(97), thumbnailUrl: generateRandomImageUrl(97), day: '일요일', genre: 'SF', placement: ['추천'], episodes: [{ ep: 1, title: '도움', duration: '1:21', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 98, title: '최강 전사', rating: 9.3, status: '최신화', gradient: generateRandomGradient(98), thumbnailUrl: generateRandomImageUrl(98), day: '일요일', genre: '액션', placement: ['추천', '인기'], episodes: [{ ep: 1, title: '최강자', duration: '1:27', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 99, title: '아름다운 세계', rating: 8.7, status: '완결', gradient: generateRandomGradient(99), thumbnailUrl: generateRandomImageUrl(99), day: '일요일', genre: '드라마', placement: [], episodes: [{ ep: 1, title: '세상', duration: '1:15', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 100, title: '핏빛 전설', rating: 9.1, status: '최신화', gradient: generateRandomGradient(100), thumbnailUrl: generateRandomImageUrl(100), day: '일요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '핏빛 비', duration: '1:24', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 101, title: '차원의 문', rating: 9.0, status: '시청중', gradient: generateRandomGradient(101), thumbnailUrl: generateRandomImageUrl(101), day: '일요일', genre: 'SF', placement: ['추천'], episodes: [{ ep: 1, title: '차원', duration: '1:19', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 102, title: '외형의 힘', rating: 9.4, status: '최신화', gradient: generateRandomGradient(102), thumbnailUrl: generateRandomImageUrl(102), day: '일요일', genre: '드라마', placement: ['추천', '인기'], episodes: [{ ep: 1, title: '두 개의 몸', duration: '1:28', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 103, title: '격투 진화', rating: 9.2, status: '최신화', gradient: generateRandomGradient(103), thumbnailUrl: generateRandomImageUrl(103), day: '일요일', genre: '액션', placement: ['추천'], episodes: [{ ep: 1, title: '새로운 싸움', duration: '1:22', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
+                { id: 104, title: '레벨업의 달인', rating: 8.9, status: '완결', gradient: generateRandomGradient(104), thumbnailUrl: generateRandomImageUrl(104), day: '일요일', genre: '판타지', placement: [], episodes: [{ ep: 1, title: '레벨업', duration: '1:17', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }] },
+                { id: 105, title: '투쟁의 기록', rating: 9.1, status: '완결', gradient: generateRandomGradient(105), thumbnailUrl: generateRandomImageUrl(105), day: '일요일', genre: '드라마', placement: ['추천'], episodes: [{ ep: 1, title: '노조', duration: '1:20', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }] },
+                { id: 106, title: '지옥의 아이돌', rating: 8.8, status: '최신화', gradient: generateRandomGradient(106), thumbnailUrl: generateRandomImageUrl(106), day: '일요일', genre: 'SF', placement: [], episodes: [{ ep: 1, title: '지옥에서 온', duration: '1:16', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }] },
             ];
 
             useEffect(() => {
@@ -1455,6 +1701,19 @@
                 '토요일': 'SAT',
                 '일요일': 'SUN'
             };
+            
+            // 오늘 요일 가져오기
+            const getTodayDayName = () => {
+                const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+                const today = new Date().getDay();
+                return days[today];
+            };
+            
+            // 오늘 요일의 애니메이션 가져오기
+            const getTodayContent = () => {
+                const todayDay = getTodayDayName();
+                return contentList.filter(c => c.day === todayDay).slice(0, 15);
+            };
 
             const getFilteredContent = () => {
                 if (selectedDay === '홈') {
@@ -1467,8 +1726,8 @@
             };
 
             const getFreeContent = () => {
-                // 전지적 독자 시점, 나혼자만레벨업을 포함한 무료 콘텐츠
-                const freeTitles = ['전지적 독자 시점', '나 혼자만 레벨업'];
+                // 절대 생존자의 길, 각성자의 귀환을 포함한 무료 콘텐츠
+                const freeTitles = ['절대 생존자의 길', '각성자의 귀환'];
                 const freeByStatus = contentList.filter(c => c.status === '무료' || c.placement?.includes('무료'));
                 const freeByTitle = contentList.filter(c => freeTitles.includes(c.title));
                 // 중복 제거 후 합치기
@@ -1531,6 +1790,9 @@
             };
 
             const HomePage = () => {
+                const [isHeroPlaying, setIsHeroPlaying] = React.useState(true);
+                const [userInteracted, setUserInteracted] = React.useState(false);
+                const iframeRef = React.useRef(null);
                 const filteredContent = getFilteredContent();
                 // 하이라이트는 "남궁세가의 제천대성"으로 고정
                 let highlightContent = contentList.find(c => c.title === '남궁세가의 제천대성');
@@ -1547,6 +1809,41 @@
                 const recommendedContent = getRecommendedContent();
                 const isHomeTab = selectedDay === '홈';
 
+                // 홈 탭일 때 자동재생 시작
+                React.useEffect(() => {
+                    if (isHomeTab && highlightContent?.bannerVideoUrl) {
+                        setIsHeroPlaying(true);
+                        console.log('Hero video autoplay triggered');
+                    } else {
+                        setIsHeroPlaying(false);
+                    }
+                }, [isHomeTab, highlightContent?.bannerVideoUrl]);
+
+                // 사용자 첫 인터랙션 감지 (페이지 어디든 클릭)
+                React.useEffect(() => {
+                    if (userInteracted || !isHomeTab) return;
+                    
+                    const handleFirstClick = () => {
+                        setUserInteracted(true);
+                        console.log('User clicked - enabling video autoplay');
+                        
+                        // iframe 재로드하여 autoplay 트리거
+                        if (iframeRef.current) {
+                            const currentSrc = iframeRef.current.src;
+                            iframeRef.current.src = currentSrc;
+                        }
+                    };
+                    
+                    // 페이지 전체에서 클릭/터치 감지
+                    document.addEventListener('click', handleFirstClick, { once: true });
+                    document.addEventListener('touchstart', handleFirstClick, { once: true });
+                    
+                    return () => {
+                        document.removeEventListener('click', handleFirstClick);
+                        document.removeEventListener('touchstart', handleFirstClick);
+                    };
+                }, [userInteracted, isHomeTab]);
+
                 return (
                     <div className="page">
                         <div className="status-bar">
@@ -1557,7 +1854,7 @@
                             <div className="header-content">
                                 <div className="header-left">
                                     <button className="icon-btn">≡</button>
-                                    <h1 className="logo">PlayMon</h1>
+                                    <h1 className="logo" onClick={() => { setCurrentPage('home'); setBottomNavTab('home'); }} style={{cursor: 'pointer'}}>PlayMon</h1>
                                 </div>
                                 <div className="header-right">
                                     <button className="icon-btn">🔍</button>
@@ -1588,25 +1885,20 @@
                                         <>
                                             {highlightContent.bannerVideoUrl.includes('drive.google.com') ? (
                                                 <iframe
-                                                    src={getGoogleDriveEmbedUrl(highlightContent.bannerVideoUrl, true)}
+                                                    ref={iframeRef}
+                                                    key={`hero-video-${highlightContent.id}-${userInteracted}`}
+                                                    src={getGoogleDrivePreviewUrl(highlightContent.bannerVideoUrl, userInteracted)}
                                                     style={{
                                                         width: '100%',
                                                         height: '100%',
                                                         border: 'none',
                                                         position: 'absolute',
                                                         top: 0,
-                                                        left: 0,
-                                                        objectFit: 'cover'
+                                                        left: 0
                                                     }}
-                                                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                                                    allow="autoplay; fullscreen; encrypted-media"
                                                     allowFullScreen
                                                     frameBorder="0"
-                                                    onLoad={() => {
-                                                        console.log('Google Drive video loaded');
-                                                    }}
-                                                    onError={(e) => {
-                                                        console.error('Google Drive video error:', e);
-                                                    }}
                                                 />
                                             ) : (
                                                 <video
@@ -1615,8 +1907,15 @@
                                                     muted
                                                     loop
                                                     playsInline
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        objectFit: 'cover',
+                                                        position: 'absolute',
+                                                        top: 0,
+                                                        left: 0
+                                                    }}
                                                     onError={(e) => {
-                                                        // 비디오 로드 실패 시 숨김
                                                         e.target.style.display = 'none';
                                                     }}
                                                 />
@@ -1627,17 +1926,9 @@
                                                 <div style={{fontSize: '14px', marginBottom: '12px'}}>지금 무료 공개!</div>
                                                 <div style={{display: 'flex', gap: '12px'}}>
                                                     <button className="watch-btn" onClick={() => {
-                                                        setSelectedContent(highlightContent);
-                                                        setCurrentPage('detail');
+                                                        setSelectedContent({...highlightContent, currentEpisode: highlightContent.episodes[0]});
+                                                        setCurrentPage('player');
                                                     }}>▶ 재생</button>
-                                                    <button className="watch-btn" style={{
-                                                        background: 'rgba(255,255,255,0.3)',
-                                                        color: 'white',
-                                                        border: '1px solid white'
-                                                    }} onClick={() => {
-                                                        setSelectedContent(highlightContent);
-                                                        setCurrentPage('detail');
-                                                    }}>ⓘ 상세 정보</button>
                                                 </div>
                                             </div>
                                         </>
@@ -1652,20 +1943,10 @@
                                             <div style={{display: 'flex', gap: '12px'}}>
                                                 <button className="watch-btn" onClick={() => {
                                                     if (highlightContent) {
-                                                        setSelectedContent(highlightContent);
-                                                        setCurrentPage('detail');
+                                                        setSelectedContent({...highlightContent, currentEpisode: highlightContent.episodes[0]});
+                                                        setCurrentPage('player');
                                                     }
                                                 }}>▶ 재생</button>
-                                                <button className="watch-btn" style={{
-                                                    background: 'rgba(255,255,255,0.3)',
-                                                    color: 'white',
-                                                    border: '1px solid white'
-                                                }} onClick={() => {
-                                                    if (highlightContent) {
-                                                        setSelectedContent(highlightContent);
-                                                        setCurrentPage('detail');
-                                                    }
-                                                }}>ⓘ 상세 정보</button>
                                             </div>
                                         </div>
                                     </div>
@@ -1677,7 +1958,7 @@
                                     <div className="content-row" style={{marginTop: '24px'}}>
                                         <h3 className="content-row-title">
                                             <span className="content-row-title-icon">🔥</span>
-                                            <span>오늘의 인기 애니메이션</span>
+                                            <span>인기 애니메이션</span>
                                         </h3>
                                         <div className="content-scroll">
                                             {popularContent.map((content) => {
@@ -1685,8 +1966,8 @@
                                                 const thumbnailPath = getThumbnailUrl(content);
                                                 return (
                                                     <div key={content.id} className="content-card-horizontal" onClick={() => {
-                                                        setSelectedContent(content);
-                                                        setCurrentPage('detail');
+                                                        setSelectedContent({...content, currentEpisode: content.episodes[0]});
+                                                        setCurrentPage('player');
                                                     }}>
                                                         <div className="thumbnail-horizontal" style={{
                                                             background: thumbnailPath ? `url(${thumbnailPath})` : (content.thumbnailUrl ? `url(${getGoogleDriveImageUrl(content.thumbnailUrl)})` : content.gradient),
@@ -1728,8 +2009,8 @@
                                                 const thumbnailPath = getThumbnailUrl(content);
                                                 return (
                                                     <div key={content.id} className="content-card-horizontal" onClick={() => {
-                                                        setSelectedContent(content);
-                                                        setCurrentPage('detail');
+                                                        setSelectedContent({...content, currentEpisode: content.episodes[0]});
+                                                        setCurrentPage('player');
                                                     }}>
                                                         <div className="thumbnail-horizontal" style={{
                                                             background: thumbnailPath ? `url(${thumbnailPath})` : (content.thumbnailUrl ? `url(${getGoogleDriveImageUrl(content.thumbnailUrl)})` : content.gradient),
@@ -1770,8 +2051,50 @@
                                                 const thumbnailPath = getThumbnailUrl(content);
                                                 return (
                                                     <div key={content.id} className="content-card-horizontal" onClick={() => {
-                                                        setSelectedContent(content);
-                                                        setCurrentPage('detail');
+                                                        setSelectedContent({...content, currentEpisode: content.episodes[0]});
+                                                        setCurrentPage('player');
+                                                    }}>
+                                                        <div className="thumbnail-horizontal" style={{
+                                                            background: thumbnailPath ? `url(${thumbnailPath})` : (content.thumbnailUrl ? `url(${getGoogleDriveImageUrl(content.thumbnailUrl)})` : content.gradient),
+                                                            backgroundSize: 'cover',
+                                                            backgroundPosition: 'center'
+                                                        }}
+                                                        onError={(e) => {
+                                                            e.target.style.background = content.gradient;
+                                                            e.target.style.backgroundSize = 'cover';
+                                                        }}>
+                                                            <div className="rating-badge">⭐ {content.rating}</div>
+                                                            {content.status === '최신화' && (
+                                                                <div className="status-badge">UP</div>
+                                                            )}
+                                                        </div>
+                                                        <div className="card-title">{content.title}</div>
+                                                        {epInfo && (
+                                                            <div className="card-episode-info">
+                                                                <span className={`episode-status ${epInfo.status}`}>
+                                                                    Ep.{epInfo.ep} {epInfo.statusText}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* 오늘 요일의 애니메이션 */}
+                                {getTodayContent().length > 0 && (
+                                    <div className="content-row">
+                                        <h3 className="content-row-title">📅 {getTodayDayName()}의 애니메이션</h3>
+                                        <div className="content-scroll">
+                                            {getTodayContent().map((content) => {
+                                                const epInfo = getEpisodeInfo(content);
+                                                const thumbnailPath = getThumbnailUrl(content);
+                                                return (
+                                                    <div key={content.id} className="content-card-horizontal" onClick={() => {
+                                                        setSelectedContent({...content, currentEpisode: content.episodes[0]});
+                                                        setCurrentPage('player');
                                                     }}>
                                                         <div className="thumbnail-horizontal" style={{
                                                             background: thumbnailPath ? `url(${thumbnailPath})` : (content.thumbnailUrl ? `url(${getGoogleDriveImageUrl(content.thumbnailUrl)})` : content.gradient),
@@ -1815,8 +2138,8 @@
                                             const thumbnailPath = getThumbnailUrl(content);
                                             return (
                                                 <div key={content.id} className="content-card" onClick={() => {
-                                                    setSelectedContent(content);
-                                                    setCurrentPage('detail');
+                                                    setSelectedContent({...content, currentEpisode: content.episodes[0]});
+                                                    setCurrentPage('player');
                                                 }}>
                                                     <div className="thumbnail" style={{
                                                         background: thumbnailPath ? `url(${thumbnailPath})` : (content.thumbnailUrl ? `url(${getGoogleDriveImageUrl(content.thumbnailUrl)})` : content.gradient),
@@ -1930,24 +2253,106 @@
                         </div>
 
                     <div className="detail-content">
-                        <div className="detail-banner" style={{
-                            background: getThumbnailUrl(selectedContent) ? `url(${getThumbnailUrl(selectedContent)})` : (selectedContent.thumbnailUrl ? `url(${getGoogleDriveImageUrl(selectedContent.thumbnailUrl)})` : selectedContent.gradient),
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}
-                        onError={(e) => {
-                            e.target.style.background = selectedContent.gradient;
-                            e.target.style.backgroundSize = 'cover';
-                        }}>
-                            <div style={{textAlign: 'center'}}>
-                                <h2 className="banner-title" style={{
-                                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
-                                }}>{selectedContent.title}</h2>
-                                <div style={{fontSize: '20px', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>⭐ {selectedContent.rating}</div>
+                        {/* 에피소드 1 자동재생 배너 */}
+                        {selectedContent.episodes && selectedContent.episodes.length > 0 ? (
+                            <div style={{
+                                position: 'relative',
+                                width: '100%',
+                                aspectRatio: '16/9',
+                                overflow: 'hidden',
+                                background: '#000'
+                            }}>
+                                {(() => {
+                                    const firstEpisode = selectedContent.episodes[0];
+                                    const videoUrl = getEpisodeVideoUrl(selectedContent, firstEpisode);
+                                    
+                                    if (videoUrl.includes('drive.google.com')) {
+                                        return (
+                                            <iframe
+                                                key={`detail-video-${selectedContent.id}`}
+                                                src={getGoogleDrivePreviewUrl(videoUrl, true)}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    border: 'none',
+                                                    position: 'absolute',
+                                                    top: 0,
+                                                    left: 0
+                                                }}
+                                                allow="autoplay; fullscreen; encrypted-media"
+                                                allowFullScreen
+                                                frameBorder="0"
+                                            />
+                                        );
+                                    } else if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+                                        return (
+                                            <iframe
+                                                src={getYouTubeEmbedUrl(videoUrl) + '&autoplay=1&mute=1'}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    border: 'none',
+                                                    position: 'absolute',
+                                                    top: 0,
+                                                    left: 0
+                                                }}
+                                                allow="autoplay; fullscreen"
+                                                allowFullScreen
+                                                frameBorder="0"
+                                            />
+                                        );
+                                    } else {
+                                        return (
+                                            <video
+                                                src={videoUrl}
+                                                autoPlay
+                                                muted
+                                                loop
+                                                playsInline
+                                                webkit-playsinline="true"
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'cover'
+                                                }}
+                                            />
+                                        );
+                                    }
+                                })()}
+                                <div style={{
+                                    position: 'absolute',
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+                                    padding: '40px 20px 20px',
+                                    color: 'white'
+                                }}>
+                                    <h2 style={{
+                                        fontSize: '24px',
+                                        fontWeight: 'bold',
+                                        marginBottom: '8px',
+                                        textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+                                    }}>{selectedContent.title}</h2>
+                                    <div style={{fontSize: '20px', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>⭐ {selectedContent.rating}</div>
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="detail-banner" style={{
+                                background: getThumbnailUrl(selectedContent) ? `url(${getThumbnailUrl(selectedContent)})` : (selectedContent.thumbnailUrl ? `url(${getGoogleDriveImageUrl(selectedContent.thumbnailUrl)})` : selectedContent.gradient),
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center'
+                            }}>
+                                <div style={{textAlign: 'center'}}>
+                                    <h2 className="banner-title" style={{
+                                        textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+                                    }}>{selectedContent.title}</h2>
+                                    <div style={{fontSize: '20px', textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>⭐ {selectedContent.rating}</div>
+                                </div>
+                            </div>
+                        )}
 
-                        <h3 style={{fontSize: '18px', fontWeight: 'bold', marginBottom: '12px'}}>에피소드</h3>
+                        <h3 style={{fontSize: '18px', fontWeight: 'bold', marginBottom: '12px', marginTop: '20px'}}>에피소드</h3>
                         <div className="episodes-list">
                             {selectedContent.episodes?.map((ep) => (
                                 <div
@@ -2007,8 +2412,8 @@
                                         const thumbnailPath = getThumbnailUrl(content);
                                         return (
                                             <div key={content.id} className="content-card" onClick={() => {
-                                                setSelectedContent(content);
-                                                setCurrentPage('detail');
+                                                setSelectedContent({...content, currentEpisode: content.episodes[0]});
+                                                setCurrentPage('player');
                                             }}>
                                                 <div className="thumbnail" style={{
                                                     background: thumbnailPath ? `url(${thumbnailPath})` : (content.thumbnailUrl ? `url(${getGoogleDriveImageUrl(content.thumbnailUrl)})` : content.gradient),
@@ -2235,19 +2640,57 @@
                 const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
                 if (fileIdMatch) {
                     const fileId = fileIdMatch[1];
-                    // iframe으로 재생 가능한 preview 링크로 변환
-                    // autoplay와 mute 파라미터 추가
-                    const params = autoplay ? '?autoplay=1&mute=1&loop=1' : '';
-                    return `https://drive.google.com/file/d/${fileId}/preview${params}`;
+                    // 여러 형식을 시도하여 Chrome 호환성 개선
+                    // 1. 직접 스트리밍 (작은 파일)
+                    // 2. preview URL (iframe 없이 video 태그로 사용)
+                    return `https://drive.google.com/uc?export=download&id=${fileId}`;
                 }
 
                 // 다른 형식: /open?id=FILE_ID
                 const openMatch = url.match(/\/open\?id=([a-zA-Z0-9_-]+)/);
                 if (openMatch) {
-                    const params = autoplay ? '?autoplay=1&mute=1&loop=1' : '';
-                    return `https://drive.google.com/file/d/${openMatch[1]}/preview${params}`;
+                    return `https://drive.google.com/uc?export=download&id=${openMatch[1]}`;
                 }
 
+                return null;
+            };
+
+            // Google Drive 대체 URL (preview 방식)
+            const getGoogleDrivePreviewUrl = (url, autoplay = false) => {
+                if (!url) return null;
+                
+                const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                if (fileIdMatch) {
+                    const fileId = fileIdMatch[1];
+                    const params = autoplay ? '?autoplay=1&muted=1' : '';
+                    return `https://drive.google.com/file/d/${fileId}/preview${params}`;
+                }
+                
+                const openMatch = url.match(/\/open\?id=([a-zA-Z0-9_-]+)/);
+                if (openMatch) {
+                    const params = autoplay ? '?autoplay=1&muted=1' : '';
+                    return `https://drive.google.com/file/d/${openMatch[1]}/preview${params}`;
+                }
+                
+                return null;
+            };
+
+            // Google Drive 직접 다운로드 URL (video 태그용)
+            const getGoogleDriveDirectUrl = (url) => {
+                if (!url) return null;
+                
+                const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                if (fileIdMatch) {
+                    const fileId = fileIdMatch[1];
+                    // 직접 다운로드/스트리밍 URL
+                    return `https://drive.google.com/uc?export=download&id=${fileId}`;
+                }
+                
+                const openMatch = url.match(/\/open\?id=([a-zA-Z0-9_-]+)/);
+                if (openMatch) {
+                    return `https://drive.google.com/uc?export=download&id=${openMatch[1]}`;
+                }
+                
                 return null;
             };
 
@@ -2291,14 +2734,15 @@
                 return (
                     <div className="player-page">
                         <div className="player-header">
-                            <button onClick={() => setCurrentPage('detail')} className="back-btn" style={{color: 'white'}}>←</button>
+                            <button onClick={() => setCurrentPage('home')} className="back-btn" style={{color: 'white'}}>←</button>
                             <div>
                                 <div style={{fontWeight: 'bold'}}>{selectedContent.title}</div>
                                 <div style={{fontSize: '14px', color: '#d1d5db'}}>EP.{selectedContent.currentEpisode.ep} {selectedContent.currentEpisode.title}</div>
                             </div>
                         </div>
 
-                        <div className="video-container">
+                        <div className="player-content">
+                            <div className="video-container">
                             {isYouTube ? (
                                 <iframe
                                     key={youtubeEmbedUrl}
@@ -2320,9 +2764,9 @@
                                 <iframe
                                     key={googleDriveEmbedUrl}
                                     className="video-player"
-                                    src={googleDriveEmbedUrl}
+                                    src={getGoogleDrivePreviewUrl(videoUrl, true)}
                                     frameBorder="0"
-                                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture; accelerometer; gyroscope"
+                                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                                     allowFullScreen
                                     style={{
                                         position: 'absolute',
@@ -2331,12 +2775,6 @@
                                         width: '100%',
                                         height: '100%',
                                         border: 'none'
-                                    }}
-                                    onLoad={() => {
-                                        console.log('Google Drive video player loaded');
-                                    }}
-                                    onError={(e) => {
-                                        console.error('Google Drive video player error:', e);
                                     }}
                                 />
                             ) : (
@@ -2368,6 +2806,58 @@
                                     비디오를 재생할 수 없습니다. 브라우저가 비디오 태그를 지원하지 않습니다.
                                 </video>
                             )}
+                            </div>
+
+                            <div className="episode-sidebar">
+                                <div className="episode-sidebar-header">에피소드 목록</div>
+                                <div className="episode-list">
+                                    {selectedContent.episodes.map((episode) => {
+                                        const thumbnailPath = getThumbnailUrl(selectedContent);
+                                        return (
+                                            <div
+                                                key={episode.ep}
+                                                className={`episode-item ${selectedContent.currentEpisode.ep === episode.ep ? 'active' : ''}`}
+                                                onClick={() => {
+                                                    setSelectedContent({...selectedContent, currentEpisode: episode});
+                                                }}
+                                            >
+                                                <div className="episode-thumbnail" style={{
+                                                    background: thumbnailPath ? `url(${thumbnailPath})` : (selectedContent.thumbnailUrl ? `url(${getGoogleDriveImageUrl(selectedContent.thumbnailUrl)})` : selectedContent.gradient),
+                                                    backgroundSize: 'cover',
+                                                    backgroundPosition: 'center'
+                                                }}></div>
+                                                <div className="episode-info">
+                                                    <div className="episode-title">EP.{episode.ep} {episode.title}</div>
+                                                    <div className="episode-duration">{episode.duration}</div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                    {selectedContent.currentEpisode.ep < selectedContent.episodes.length && (
+                                        <button
+                                            onClick={() => {
+                                                const nextEp = selectedContent.episodes[selectedContent.currentEpisode.ep];
+                                                if (nextEp) {
+                                                    setSelectedContent({...selectedContent, currentEpisode: nextEp});
+                                                }
+                                            }}
+                                            style={{
+                                                width: '100%',
+                                                padding: '12px',
+                                                background: '#667eea',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '8px',
+                                                fontWeight: 'bold',
+                                                cursor: 'pointer',
+                                                marginTop: '8px'
+                                            }}
+                                        >
+                                            ▶ 다음 에피소드 재생
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
                         <div className="player-footer">
