@@ -1120,17 +1120,20 @@
 
             // 제공된 Google Drive 썸네일 링크들
             const providedThumbnails = [
-                'https://drive.google.com/file/d/1YYam0QaKs29az53FB62PvC_A0voSmrAG/view?usp=drive_link',
-                'https://drive.google.com/file/d/1DhBhNdQb3c6aagraKYUGcheNcOZjblyt/view?usp=drive_link',
-                'https://drive.google.com/file/d/1_MMTeCbQXGHChPlK_b9JzjVHUWP5Amn6/view?usp=drive_link',
-                'https://drive.google.com/file/d/1K-Uw5GJoAtDptQ8ZzoKVR7iWmJxfRKi1/view?usp=drive_link',
-                'https://drive.google.com/file/d/1fxBDpR67z1Spy6PPaZv5a-PRwTOSVZHI/view?usp=drive_link',
-                'https://drive.google.com/file/d/1tjqTM-yd0LEy1NMZWVto2dQfwjLmuIbT/view?usp=drive_link',
-                'https://drive.google.com/file/d/1PNgTUQF9E6VfAZQr0iN3_TEDN07EQxtY/view?usp=drive_link',
-                'https://drive.google.com/file/d/1ojWbQusIiuzU5cY7eAOX7VmHcV3ThNgo/view?usp=drive_link',
-                'https://drive.google.com/file/d/1x-ocLJ12grd97Mwx7ISEU1ps9PsqJZef/view?usp=drive_link',
-                'https://drive.google.com/file/d/1AWOKdublUQtHE_ts-hcAqQFZnWDg9Lcw/view?usp=drive_link',
-                'https://drive.google.com/file/d/1cRhBkwOSCkvjze8-8Sg4V4yg_lw06E6f/view?usp=drive_link'
+                './assets/random/1.png',
+                './assets/random/2.png',
+                './assets/random/3.png',
+                './assets/random/4.png',
+                './assets/random/5.png',
+                './assets/random/6.png',
+                './assets/random/7.png',
+                './assets/random/8.png',
+                './assets/random/9.png',
+                './assets/random/10.png',
+                './assets/random/11.png',
+                './assets/random/12.png',
+                './assets/random/13.png',
+                './assets/random/14.png'
             ];
 
             // 랜덤 이미지 URL 생성 함수 (제공된 Google Drive 썸네일 사용)
@@ -1180,12 +1183,15 @@
             // 썸네일 이미지 로드 (없으면 기본 이미지)
             const getThumbnailUrl = (content) => {
                 if (content.thumbnailUrl) {
+                    // 로컬 파일 경로인 경우 그대로 반환
+                    if (content.thumbnailUrl.startsWith('./assets/')) {
+                        return content.thumbnailUrl;
+                    }
                     // 구글 드라이브 링크인 경우 이미지 URL로 변환
                     return getGoogleDriveImageUrl(content.thumbnailUrl);
                 }
                 if (content.folderThumbnail) {
                     const path = getContentFilePath(content.title, 'thumbnail', content.folderThumbnail);
-                    // 파일 존재 여부는 실제로는 서버에서 확인해야 하지만, 데모에서는 경로만 반환
                     return path;
                 }
                 return null;
@@ -1208,14 +1214,14 @@
                     rating: 9.9,
                     status: '최신화',
                     gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    thumbnailUrl: 'https://drive.google.com/file/d/1s6tfvlMv0_jYJ2z2vKIQ0FoigWhevT8Y/view?usp=drive_link',
+                    thumbnailUrl: './assets/namgung/썸네일/남궁세가.png',
                     folderThumbnail: null,
                     day: '월요일',
                     genre: '무협',
                     placement: ['추천', '인기'],
-                    bannerVideoUrl: 'https://drive.google.com/file/d/1oaScON2wJCPTiZ4BvGYv2IxUNX0_V6zq/view?usp=drive_link',
+                    bannerVideoUrl: './assets/namgung/에피소드/남궁세가_독자반응변경.mp4',
                     episodes: [
-                        { ep: 1, title: '에피소드 1', duration: '1:34', videoUrl: 'https://drive.google.com/file/d/1oaScON2wJCPTiZ4BvGYv2IxUNX0_V6zq/view?usp=drive_link', folderVideo: null },
+                        { ep: 1, title: '에피소드 1', duration: '1:34', videoUrl: './assets/namgung/에피소드/남궁세가_독자반응변경.mp4', folderVideo: null },
                     ]
                 },
                 {
@@ -1224,14 +1230,14 @@
                     rating: 9.8,
                     status: '최신화',
                     gradient: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-                    thumbnailUrl: 'https://drive.google.com/file/d/1Ckv6a7kRHA31zjGfad56XUTrjWARdalK/view?usp=drive_link',
+                    thumbnailUrl: './assets/executioner/썸네일/사형집행관.png',
                     folderThumbnail: null,
                     day: '화요일',
                     genre: '액션',
                     placement: ['인기', '최신'],
-                    bannerVideoUrl: '', // 구글 드라이브 배너 비디오 링크를 여기에 입력하세요 (선택사항)
+                    bannerVideoUrl: '', // 영상 추가 예정
                     episodes: [
-                        { ep: 1, title: '에피소드 1', duration: '0:52', videoUrl: '', folderVideo: null }, // 구글 드라이브 영상 링크를 videoUrl에 입력하세요
+                        { ep: 1, title: '에피소드 1', duration: '0:52', videoUrl: '', folderVideo: null }, // 영상 추가 예정
                     ]
                 },
                 {
@@ -1240,14 +1246,14 @@
                     rating: 9.7,
                     status: '최신화',
                     gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                    thumbnailUrl: 'https://drive.google.com/file/d/1KhNFSOYV5MiNFrSqvX9PSBr-hGDqrEtL/view?usp=drive_link',
+                    thumbnailUrl: './assets/killercop/썸네일/킬러경찰.png',
                     folderThumbnail: null,
                     day: '수요일',
                     genre: '액션',
                     placement: ['인기', '추천'],
-                    bannerVideoUrl: '', // 구글 드라이브 배너 비디오 링크를 여기에 입력하세요 (선택사항)
+                    bannerVideoUrl: '', // 영상 추가 예정
                     episodes: [
-                        { ep: 1, title: '에피소드 1', duration: '0:52', videoUrl: '', folderVideo: null }, // 구글 드라이브 영상 링크를 videoUrl에 입력하세요
+                        { ep: 1, title: '에피소드 1', duration: '0:52', videoUrl: '', folderVideo: null }, // 영상 추가 예정
                     ]
                 },
                 {
@@ -1256,7 +1262,7 @@
                     rating: 9.6,
                     status: '최신화',
                     gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                    thumbnailUrl: 'https://drive.google.com/file/d/1asIxHPVa2g7crgGTR1oXYXpGWOn8X6l9/view?usp=drive_link', // 구글 드라이브 썸네일 링크를 여기에 입력하세요
+                    thumbnailUrl: './assets/villain/썸네일/악당가문.png',
                     folderThumbnail: null,
                     day: '목요일',
                     genre: '로맨스',
